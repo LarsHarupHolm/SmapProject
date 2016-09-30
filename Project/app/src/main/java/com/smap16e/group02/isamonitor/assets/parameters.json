@@ -1,0 +1,142 @@
+[
+  {
+    "id": 1,
+    "name": "Voltage regulator 1",
+    "surname": "Cortez",
+    "unit": "Volt",
+    "isActive": false
+  },
+  {
+    "id": 2,
+    "name": "Voltage regulator 2",
+    "surname": "Cote",
+    "unit": "Volt",
+    "isActive": false
+  },
+  {
+    "id": 3,
+    "name": "Voltage regulator 3",
+    "surname": "Wall",
+    "unit": "Volt",
+    "isActive": false
+  },
+  {
+    "id": 4,
+    "name": "Voltage regulator 4",
+    "surname": "Carter",
+    "unit": "Volt",
+    "isActive": false
+  },
+  {
+    "id": 5,
+    "name": "Voltage regulator 5",
+    "surname": "Clements",
+    "unit": "Volt",
+    "isActive": false
+  },
+  {
+    "id": 6,
+    "name": "Voltage regulator 6",
+    "surname": "Ramos",
+    "unit": "Volt",
+    "isActive": false
+  },
+  {
+    "id": 7,
+    "name": "Voltage regulator 7",
+    "surname": "Knowles",
+    "unit": "Volt",
+    "isActive": false
+  },
+  {
+    "id": 8,
+    "name": "Voltage regulator 8",
+    "surname": "Cooke",
+    "unit": "Volt",
+    "isActive": false
+  },
+  {
+    "id": 9,
+    "name": "Voltage regulator 9",
+    "surname": "Avery",
+    "unit": "Volt",
+    "isActive": false
+  },
+  {
+    "id": 10,
+    "name": "Voltage regulator 10",
+    "surname": "Simon",
+    "unit": "Volt",
+    "isActive": false
+  },
+  {
+    "id": 11,
+    "name": "Voltage regulator 11",
+    "surname": "Lara",
+    "unit": "Volt",
+    "isActive": false
+  },
+  {
+    "id": 12,
+    "name": "Voltage regulator 12",
+    "surname": "Ballard",
+    "unit": "Volt",
+    "isActive": false
+  },
+  {
+    "id": 13,
+    "name": "Voltage regulator 13",
+    "surname": "Mejia",
+    "unit": "Volt",
+    "isActive": false
+  },
+  {
+    "id": 14,
+    "name": "Voltage regulator 14",
+    "surname": "Martin",
+    "unit": "Volt",
+    "isActive": false
+  },
+  {
+    "id": 15,
+    "name": "Voltage regulator 15",
+    "surname": "Blankenship",
+    "unit": "Volt",
+    "isActive": false
+  },
+  {
+    "id": 16,
+    "name": "Voltage regulator 16",
+    "surname": "Britt",
+    "unit": "Volt",
+    "isActive": false
+  },
+  {
+    "id": 17,
+    "name": "Voltage regulator 17",
+    "surname": "Mclaughlin",
+    "unit": "Volt",
+    "isActive": false
+  },
+  {
+    "id": 18,
+    "name": "Voltage regulator 18",
+    "surname": "Bishop",
+    "unit": "Volt",
+    "isActive": false
+  },
+  {
+    "id": 19,
+    "name": "Voltage regulator 19",
+    "surname": "Farrell",
+    "unit": "Volt",
+    "isActive": false
+  },
+  {
+    "id": 20,
+    "name": "Voltage regulator 20",
+    "surname": "Galloway",
+    "unit": "Volt",
+    "isActive": false
+  }
+]

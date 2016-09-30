@@ -42,4 +42,9 @@ public class MonitorDbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
     }
+
+    //TODO: Implement check to se if parameter database is empty. If it's empty we will load the jsonfile
+    public boolean isParameterDatabaseEmpty(){
+        return false;
+    }
 }
