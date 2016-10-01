@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">MasterDetailTest</string>
+    <string name="title_parameter_detail">Parameter Detail</string>
+</resources>

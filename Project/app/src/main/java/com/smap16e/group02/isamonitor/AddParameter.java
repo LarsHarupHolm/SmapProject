@@ -25,7 +25,7 @@ public class AddParameter extends AppCompatActivity implements AdapterView.OnIte
             @Override
             public void onClick(View v) {
                 Intent resultIntent = new Intent();
-                setResult(MainActivity.RESULT_CANCELED, resultIntent);
+                setResult(ParameterListActivity.RESULT_CANCELED, resultIntent);
                 finish();
             }
         });
@@ -35,8 +35,8 @@ public class AddParameter extends AppCompatActivity implements AdapterView.OnIte
             @Override
             public void onClick(View v) {
                 Intent resultIntent = new Intent();
-                resultIntent.putExtra(MainActivity.RESULT_ID, selectedParameter);
-                setResult(MainActivity.RESULT_OK, resultIntent);
+                resultIntent.putExtra(ParameterListActivity.RESULT_ID, selectedParameter);
+                setResult(ParameterListActivity.RESULT_OK, resultIntent);
                 finish();
             }
         });

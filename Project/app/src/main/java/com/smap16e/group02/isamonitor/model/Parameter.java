@@ -5,11 +5,11 @@ package com.smap16e.group02.isamonitor.model;
  */
 
 public class Parameter {
-    private int id;
-    private String name;
-    private String surname;
-    private String unit;
-    private boolean isActive;
+    public int id;
+    public String name;
+    public String surname;
+    public String unit;
+    public boolean isActive;
 
     public Parameter(){}
 
@@ -64,5 +64,9 @@ public class Parameter {
     }
     //endregion
 
+    @Override
+    public String toString() {
+        return name;
+    }
 
 }

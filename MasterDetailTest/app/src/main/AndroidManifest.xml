@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.smap16e.group02.isamonitor">
+    package="com.example.ksjensen.masterdetailtest">
 
     <application
         android:allowBackup="true"
@@ -25,9 +25,8 @@
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.smap16e.group02.isamonitor.ParameterListActivity" />
+                android:value="com.example.ksjensen.masterdetailtest.ParameterListActivity" />
         </activity>
-        <activity android:name=".AddParameter"></activity>
     </application>
 
 </manifest>
