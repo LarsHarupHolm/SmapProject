@@ -10,14 +10,7 @@ import java.util.Map;
  */
 
 public class ParameterList {
-    /**
-     * An array of sample (dummy) items.
-     */
     public static final List<Parameter> ITEMS = new ArrayList<>();
-
-    /**
-     * A map of sample (dummy) items, by ID.
-     */
     public static final Map<String, Parameter> ITEM_MAP = new HashMap<>();
 
     private static final int COUNT = 25;

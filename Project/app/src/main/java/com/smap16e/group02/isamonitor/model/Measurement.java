@@ -7,7 +7,7 @@ package com.smap16e.group02.isamonitor.model;
 public class Measurement {
     private int id;
     private int parameterId;
-    private int value;
+    private double value;
     private long measureTime;
 
     public Measurement(){}
@@ -29,11 +29,11 @@ public class Measurement {
         this.parameterId = parameterId;
     }
 
-    public int getValue() {
+    public double getValue() {
         return value;
     }
 
-    public void setValue(int value) {
+    public void setValue(double value) {
         this.value = value;
     }
 

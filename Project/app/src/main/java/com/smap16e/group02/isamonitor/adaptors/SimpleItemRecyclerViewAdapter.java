@@ -44,7 +44,7 @@ public class SimpleItemRecyclerViewAdapter
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
         holder.mIdView.setText(mValues.get(position).getName());
-        holder.mContentView.setText("Sample text. QWERTY12345");
+        holder.mContentView.setText("Sample text. QWERTY123");
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override

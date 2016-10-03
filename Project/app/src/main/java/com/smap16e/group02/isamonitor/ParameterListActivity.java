@@ -31,41 +31,48 @@ public class ParameterListActivity extends AppCompatActivity {
 
     private FragmentManager fragmentManager;
 
-    //region Service handling
-    private BackgroundService mBoundService;
-    private boolean mIsBound = false;
-
+    //region Service binding
+    BackgroundService mService;
+    boolean mBound = false;
     private ServiceConnection mConnection = new ServiceConnection() {
+
         @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            mBoundService = ((BackgroundService.LocalBinder) service).getService();
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            BackgroundService.LocalBinder binder = (BackgroundService.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName name) {
-            mBoundService = null;
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
         }
     };
 
-    void doBindService() {
-        bindService(new Intent(ParameterListActivity.this,
-                BackgroundService.class), mConnection, Context.BIND_AUTO_CREATE);
-        mIsBound = true;
+    void bindService() {
+        Intent intent = new Intent(this, BackgroundService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
-    void doUnbindService() {
-        if (mIsBound) {
+    void unbindService() {
+        if (mBound) {
             unbindService(mConnection);
-            mIsBound = false;
+            mBound = false;
         }
     }
     //endregion
 
+    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(ParameterList.ITEMS, fragmentManager));
+    }
+
+    //region Overrides
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parameter_list);
-        doBindService();
 
         fragmentManager = getSupportFragmentManager();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -94,14 +101,16 @@ public class ParameterListActivity extends AppCompatActivity {
         });
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(ParameterList.ITEMS, fragmentManager));
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bindService();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        doUnbindService();
+        unbindService();
     }
 
     @Override
@@ -116,4 +125,5 @@ public class ParameterListActivity extends AppCompatActivity {
                 Toast.makeText(ParameterListActivity.this, "User selected parameter " + data.getLongExtra(RESULT_ID, -2), Toast.LENGTH_SHORT).show();
         }
     }
+    //endregion
 }

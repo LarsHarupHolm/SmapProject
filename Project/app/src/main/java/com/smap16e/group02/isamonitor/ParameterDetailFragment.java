@@ -12,9 +12,6 @@ import android.widget.TextView;
 import com.smap16e.group02.isamonitor.model.Parameter;
 import com.smap16e.group02.isamonitor.model.ParameterList;
 
-import java.util.Map;
-
-
 /**
  * A fragment representing a single Parameter detail screen.
  * This fragment is either contained in a {@link ParameterListActivity}
