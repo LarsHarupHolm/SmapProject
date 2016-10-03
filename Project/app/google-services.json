@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "251326663213",
+    "firebase_url": "https://smapproject-e1b1f.firebaseio.com",
+    "project_id": "smapproject-e1b1f",
+    "storage_bucket": "smapproject-e1b1f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:251326663213:android:2d0030be006daac0",
+        "android_client_info": {
+          "package_name": "com.smap16e.group02.isamonitor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "251326663213-d37gbtmac6vtjc17f5t54ss5v4hqv9il.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.smap16e.group02.isamonitor",
+            "certificate_hash": "DD80EA9145C64CC62A60889F2069C7174B924C4C"
+          }
+        },
+        {
+          "client_id": "251326663213-d68cop7lh1r8q83blm5jvtcukkeipfis.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJsYnm-qG0pD9Ss4IMjGmS0XQxX3gCTFQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "251326663213-d68cop7lh1r8q83blm5jvtcukkeipfis.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
