@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_login"
     android:layout_width="match_parent"
@@ -9,31 +10,46 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
+    android:weightSum="10"
     tools:context="com.smap16e.group02.isamonitor.login.LoginActivity">
-    
+
+    <ImageView
+        android:id="@+id/login_logo"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="9"
+        android:layout_marginTop="30dp"
+        android:layout_gravity="center_horizontal"
+        app:srcCompat="@drawable/ic_isa_vector_red_nobackground_shadow"
+        android:tint="#ff0000"
+        android:contentDescription="@string/isa_logo" />
+
     <EditText
         android:id="@+id/login_email"
         android:inputType="textEmailAddress"
+        android:maxLines="1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
         android:hint="@string/e_mail"
         />
     <EditText
         android:id="@+id/login_password"
         android:inputType="textPassword"
+        android:maxLines="1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:hint="@string/password"/>
 
     <Button
-        android:id="@+id/btn_login"
+        android:id="@+id/btn_logIn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/log_in"
         android:layout_gravity="center_horizontal" />
 
     <Button
-        android:id="@+id/btn_register"
+        android:id="@+id/btn_logIn_signUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/register"

@@ -8,4 +8,6 @@
     <string name="e_mail">e-mail</string>
     <string name="log_in">Log in</string>
     <string name="register">register</string>
+    <string name="isa_logo">ISA logo</string>
+    <string name="confirm_password">Confirm password</string>
 </resources>
