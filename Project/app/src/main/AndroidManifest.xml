@@ -31,6 +31,10 @@
                 android:value="com.smap16e.group02.isamonitor.ParameterListActivity" />
         </activity>
         <activity android:name=".AddParameter"></activity>
+        <service
+            android:name=".BackgroundService"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>

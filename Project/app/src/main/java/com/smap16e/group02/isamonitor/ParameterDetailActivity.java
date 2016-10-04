@@ -1,14 +1,27 @@
 package com.smap16e.group02.isamonitor;
 
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
+
+import com.smap16e.group02.isamonitor.model.ParameterList;
+
+import static com.smap16e.group02.isamonitor.BackgroundService.MEASUREMENT_VALUE;
 
 /**
  * An activity representing a single Parameter detail screen. This
@@ -18,12 +31,73 @@ import android.view.MenuItem;
  */
 public class ParameterDetailActivity extends AppCompatActivity {
 
+    private ParameterDetailFragment fragment;
+
+    //region Service binding
+    BackgroundService mService;
+    private boolean mBound = false;
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            mService = ((BackgroundService.LocalBinder) service).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
+
+    void bindService() {
+        bindService(new Intent(ParameterDetailActivity.this,
+                BackgroundService.class), mConnection, Context.BIND_AUTO_CREATE);
+        mBound = true;
+    }
+
+    void unbindService() {
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+
+    private BroadcastReceiver onServiceResult = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Double value = intent.getDoubleExtra(MEASUREMENT_VALUE, 0.0);
+            fragment.updateValue(value);
+        }
+    };
+
+    private BroadcastReceiver onBinding = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(mService != null){
+                mService.GetCurrentReading(fragment.mItem.getId());
+            }
+        }
+    };
+    //endregion
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parameter_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
+
+        bindService();
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BackgroundService.BROADCAST_NEW_READING_RESULT);
+        LocalBroadcastManager.getInstance(this).registerReceiver(onServiceResult, filter);
+
+        filter = new IntentFilter();
+        filter.addAction(BackgroundService.BROADCAST_BINDING);
+        LocalBroadcastManager.getInstance(this).registerReceiver(onBinding, filter);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -55,12 +129,19 @@ public class ParameterDetailActivity extends AppCompatActivity {
             Bundle arguments = new Bundle();
             arguments.putString(ParameterDetailFragment.ARG_ITEM_ID,
                     getIntent().getStringExtra(ParameterDetailFragment.ARG_ITEM_ID));
-            ParameterDetailFragment fragment = new ParameterDetailFragment();
+            fragment = new ParameterDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.parameter_detail_container, fragment)
                     .commit();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        unbindService();
     }
 
     @Override

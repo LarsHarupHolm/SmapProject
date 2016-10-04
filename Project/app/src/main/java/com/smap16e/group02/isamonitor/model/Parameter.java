@@ -9,16 +9,14 @@ public class Parameter {
     public String name;
     public String surname;
     public String unit;
-    public boolean isActive;
 
     public Parameter(){}
 
-    public Parameter(int id, String name, String surname, String unit, boolean isActive) {
+    public Parameter(int id, String name, String surname, String unit) {
         this.id = id;
         this.name = name;
         this.surname = surname;
         this.unit = unit;
-        this.isActive = isActive;
     }
 
     //region Getters and Setters
@@ -53,14 +51,6 @@ public class Parameter {
 
     public void setUnit(String unit) {
         this.unit = unit;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean active) {
-        isActive = active;
     }
     //endregion
 

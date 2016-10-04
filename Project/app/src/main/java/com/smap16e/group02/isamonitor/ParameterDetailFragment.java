@@ -1,9 +1,15 @@
 package com.smap16e.group02.isamonitor;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,11 +30,8 @@ public class ParameterDetailFragment extends Fragment {
      * represents.
      */
     public static final String ARG_ITEM_ID = "item_id";
-
-    /**
-     * The dummy content this fragment is presenting.
-     */
-    private Parameter mItem;
+    public Parameter mItem;
+    private TextView detailTextView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -60,11 +63,18 @@ public class ParameterDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.parameter_detail, container, false);
 
+
+        detailTextView = (TextView) rootView.findViewById(R.id.parameter_detail);
+
         // Show the dummy content as text in a TextView.
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.parameter_detail)).setText(mItem.getSurname());
+            detailTextView.setText("Current value: ");
         }
 
         return rootView;
+    }
+
+    public void updateValue(double value){
+        detailTextView.setText(String.format("Current value: %.2f", value));
     }
 }
