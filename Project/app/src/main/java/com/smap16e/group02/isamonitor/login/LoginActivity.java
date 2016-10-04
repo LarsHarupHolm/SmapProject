@@ -14,6 +14,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.smap16e.group02.isamonitor.ParameterListActivity;
 import com.smap16e.group02.isamonitor.R;
 
@@ -70,9 +71,15 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d(TAG, "LogIn: " + task.isSuccessful());
                         if(task.isSuccessful())
                         {
-                            Intent loginFinishedIntent = new Intent(LoginActivity.this, ParameterListActivity.class);
-                            startActivity(loginFinishedIntent);
-                            finish(); //finish so User cannot re-enter login screen
+                            //Check if user is verified
+                            /***** todo: email is never sent - implement later
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            if(user.isEmailVerified()) { */
+                                Intent loginFinishedIntent = new Intent(LoginActivity.this, ParameterListActivity.class);
+                                startActivity(loginFinishedIntent);
+                                finish(); //finish so User cannot re-enter login screen
+                            /*****} */
+                            Toast.makeText(LoginActivity.this, "Please verify your account before logging in", Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(LoginActivity.this, "Username or password incorrect", Toast.LENGTH_SHORT).show();
                         }

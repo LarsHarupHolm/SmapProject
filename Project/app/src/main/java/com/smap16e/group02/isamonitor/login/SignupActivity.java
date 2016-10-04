@@ -14,6 +14,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.smap16e.group02.isamonitor.R;
 
 import java.util.Objects;
@@ -22,6 +23,7 @@ public class SignupActivity extends AppCompatActivity {
 
 
     private String TAG = "SignupActivity";
+    private final int MIN_PASSWORD_LENGTH = 6;
 
     private Button btnSignUp;
     private FirebaseAuth mAuth;
@@ -63,22 +65,49 @@ public class SignupActivity extends AppCompatActivity {
                     return;
                 }
 
+                if(password.length() < MIN_PASSWORD_LENGTH) {
+                    Toast.makeText(SignupActivity.this, "Password must be "+MIN_PASSWORD_LENGTH + " characters long!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 //Check if email is already registered
-                mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(SignupActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "LogIn: " + task.isSuccessful());
-                        if(task.isSuccessful())
-                        {
-                            Intent returnIntent = new Intent();
-                            returnIntent.putExtra(LoginActivity.EXTRA_EMAIL, email);
-                            setResult(RESULT_OK, returnIntent);
-                            finish();
-                        } else {
-                            Log.d(TAG, task.getResult().toString());
+                try{
+                    mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(SignupActivity.this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            Log.d(TAG, "SignUp: " + task.isSuccessful());
+                            if(task.isSuccessful())
+                            {
+                                //Send verification Email
+                                /***** todo:not sending email - fix later
+                                 FirebaseUser user = mAuth.getCurrentUser();
+                                 user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                if(task.isSuccessful()) {
+                                Log.d(TAG, "Verification Email sent");
+                                Toast.makeText(SignupActivity.this, "Verification email has been sent. Please verify your account", Toast.LENGTH_LONG).show();
+                                } else {
+                                Toast.makeText(SignupActivity.this, "Something went wrong, please try again", Toast.LENGTH_SHORT).show();
+                                }
+                                }
+                                }); */
+
+                                Intent returnIntent = new Intent();
+                                returnIntent.putExtra(LoginActivity.EXTRA_EMAIL, email);
+                                setResult(RESULT_OK, returnIntent);
+                                finish();
+                            } else {
+                                Toast.makeText(SignupActivity.this, "Authentication failed." + task.getException(),
+                                        Toast.LENGTH_SHORT).show();
+                                Log.d(TAG, task.getException().toString());
+                                finish();
+                            }
                         }
-                    }
-                });
+                    });
+                } catch (Exception e){
+                    Log.d(TAG, e.getMessage());
+                }
             }
         });
     }
