@@ -129,9 +129,6 @@ public class BackgroundService extends Service {
                         Log.e(TAG, "Reading user parameters from database...");
 
                         User user = dataSnapshot.getValue(User.class);
-                        if (generalParameterList == null || user.subscribedParameters == null) {
-                            return;
-                        }
                         userParameterIDList = new ArrayList<>();
                         subscribedParameterList = new ArrayList<>();
                         notSubscribedParameterList = new ArrayList<>();
