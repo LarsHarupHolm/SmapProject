@@ -97,18 +97,26 @@ public class SignupActivity extends AppCompatActivity {
                                         if(task.isSuccessful()){
                                             Log.d(TAG, "User is reauthenticated");
                                         } else {
-                                            Log.d(TAG, task.getException().toString());
+                                            try{
+                                                throw task.getException();
+                                            } catch (Exception e) {
+                                                Log.d(TAG, e.getMessage());
+                                            }
                                         }
                                     }
                                 });
+                                // Add user to database
+                                Map<String, String> map = new HashMap<>();
+                                map.put("email", user.getEmail());
+                                mDatabase.child("users").child(user.getUid()).setValue(map);
                                 //Send verification Email
                                 /***** todo:not sending email - fix later **/
                                  user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if(task.isSuccessful()) {
-                                        Log.d(TAG, "Verification Email sent to " + email);
-                                        Toast.makeText(SignupActivity.this, "Verification email has been sent. Please verify your account", Toast.LENGTH_LONG).show();
+                                            Log.d(TAG, "Verification Email sent to " + email);
+                                            Toast.makeText(SignupActivity.this, "Verification email has been sent. Please verify your account", Toast.LENGTH_LONG).show();
                                         } else {
                                             Toast.makeText(SignupActivity.this, " " + task.getException(), Toast.LENGTH_LONG).show();
                                             Toast.makeText(SignupActivity.this, "Something went wrong, please contact support", Toast.LENGTH_SHORT).show();
@@ -116,19 +124,20 @@ public class SignupActivity extends AppCompatActivity {
                                     }
                                 });
 
-                                // Add user to database
-                                Map<String, String> map = new HashMap<>();
-                                map.put("email", user.getEmail());
-                                mDatabase.child("users").child(user.getUid()).child("email").setValue(map);
+
 
                                 Intent returnIntent = new Intent();
                                 returnIntent.putExtra(LoginActivity.EXTRA_EMAIL, email);
                                 setResult(RESULT_OK, returnIntent);
                                 finish();
                             } else {
-                                Toast.makeText(SignupActivity.this, "Authentication failed." + task.getException(),
-                                        Toast.LENGTH_LONG).show();
-                                Log.d(TAG, task.getException().toString());
+                                try{
+                                    throw task.getException();
+                                } catch (Exception e) {
+                                    Toast.makeText(SignupActivity.this, "Authentication failed." + e.getMessage(),
+                                            Toast.LENGTH_LONG).show();
+                                    Log.d(TAG, e.getMessage());
+                                }
                                 finish();
                             }
                         }
