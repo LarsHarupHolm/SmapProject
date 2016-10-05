@@ -4,35 +4,62 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 
-import com.smap16e.group02.isamonitor.model.Measurement;
 import com.smap16e.group02.isamonitor.model.Parameter;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 public class AddParameter extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private long selectedParameter = -1;
     private Spinner spinner;
+    private ArrayList<Parameter> parameterArrayList;
+
+    //region Service binding
+    BackgroundService mService;
+    boolean mBound = false;
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            BackgroundService.LocalBinder binder = (BackgroundService.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
+
+    void bindService() {
+        Intent intent = new Intent(this, BackgroundService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    void unbindService() {
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+    //endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_parameter);
+        bindService();
 
         Button cancelButton = (Button) findViewById(R.id.cancelButton);
         cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -48,6 +75,7 @@ public class AddParameter extends AppCompatActivity implements AdapterView.OnIte
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                addParameterToUserSubscription();
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra(ParameterListActivity.RESULT_ID, selectedParameter);
                 setResult(ParameterListActivity.RESULT_OK, resultIntent);
@@ -55,56 +83,39 @@ public class AddParameter extends AppCompatActivity implements AdapterView.OnIte
             }
         });
 
+        final ArrayList<String> testArray;
+        testArray = new ArrayList<>();
         spinner = (Spinner) findViewById(R.id.spinner);
         spinner.setOnItemSelectedListener(this);
-        ArrayList<String> testArray = new ArrayList<>();
-        List<Parameter> parameterList = LoadParametersFromJson();
 
-        for (Parameter parameter : parameterList) {
+        parameterArrayList = new ArrayList<>();
+        for(Parameter parameter: ParameterListActivity.notSubscribedParameterList){
             testArray.add(parameter.getName() + parameter.getSurname());
+            parameterArrayList.add(parameter);
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, testArray);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(AddParameter.this, android.R.layout.simple_dropdown_item_1line, testArray);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService();
+    }
+
+    private void addParameterToUserSubscription(){
+        mService.addParameterSubscription(parameterArrayList.get((int) selectedParameter).getId());
+    }
+
+    @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        selectedParameter = id+1;
+        selectedParameter = id;
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         //Wat
-    }
-
-    private List<Parameter> LoadParametersFromJson(){
-        List<Parameter> parameterList = new ArrayList<>();
-        String json;
-        try {
-            InputStream is = getAssets().open("parameters.json");
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
-            JSONArray jsonArray = new JSONArray(json);
-
-            for(int i = 1; i < jsonArray.length(); i++){
-                JSONObject jsonObject = jsonArray.getJSONObject(i-1);
-                Parameter parameter = new Parameter(){};
-                parameter.setId(jsonObject.getInt("id"));
-                parameter.setName(jsonObject.getString("name"));
-                parameter.setSurname(jsonObject.getString("surname"));
-                parameter.setUnit(jsonObject.getString("unit"));
-                parameter.setActive(jsonObject.getBoolean("isActive"));
-                parameterList.add(parameter);
-            }
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
-
-        return parameterList;
     }
 }

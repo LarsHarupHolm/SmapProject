@@ -1,48 +1,57 @@
 package com.smap16e.group02.isamonitor;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.smap16e.group02.isamonitor.adaptors.SimpleItemRecyclerViewAdapter;
+import com.smap16e.group02.isamonitor.model.Parameter;
 import com.smap16e.group02.isamonitor.model.ParameterList;
+
+import java.util.List;
 
 /**
  * References:
  *  https://developer.android.com/reference/android/app/Service.html
- *  https://www.sitepoint.com/create-your-own-content-provider-in-android/
  */
 public class ParameterListActivity extends AppCompatActivity {
 
     static final String RESULT_ID = "result id";
     static final int ADD_PARAMETER = 0;
     public static boolean modeTwoPane;
-
     private FragmentManager fragmentManager;
+    private static final String TAG = "ParameterListActivity";
+    private View recyclerView;
+
+    private static List<Parameter> subscribedParameterList;
+    public static List<Parameter> notSubscribedParameterList;
 
     //region Service binding
     BackgroundService mService;
-    boolean mBound = false;
+    private boolean mBound = false;
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            BackgroundService.LocalBinder binder = (BackgroundService.LocalBinder) service;
-            mService = binder.getService();
-            mBound = true;
+            Log.e(TAG, "onServiceConnected called...");
+
+            mService = ((BackgroundService.LocalBinder) service).getService();
         }
 
         @Override
@@ -52,8 +61,11 @@ public class ParameterListActivity extends AppCompatActivity {
     };
 
     void bindService() {
-        Intent intent = new Intent(this, BackgroundService.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        Log.e(TAG, "bindService called...");
+
+        bindService(new Intent(ParameterListActivity.this,
+                BackgroundService.class), mConnection, Context.BIND_AUTO_CREATE);
+        mBound = true;
     }
 
     void unbindService() {
@@ -74,14 +86,22 @@ public class ParameterListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parameter_list);
 
+        bindService();
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BackgroundService.BROADCAST_NEW_USERPARAMETERLIST);
+        LocalBroadcastManager.getInstance(this).registerReceiver(onServiceResult, filter);
+
         fragmentManager = getSupportFragmentManager();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        View recyclerView = findViewById(R.id.parameter_list);
+        recyclerView = findViewById(R.id.parameter_list);
         assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        if(ParameterList.ITEMS != null){
+            setupRecyclerView((RecyclerView) recyclerView);
+        }
 
         if (findViewById(R.id.parameter_detail_container) != null) {
             // The detail container view will be present only in the
@@ -101,11 +121,15 @@ public class ParameterListActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        bindService();
-    }
+    private BroadcastReceiver onServiceResult = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            subscribedParameterList = mService.getSubscribedParameterList();
+            notSubscribedParameterList = mService.getNotSubscribedParameterList();
+            ParameterList.setParameters(subscribedParameterList);
+            setupRecyclerView((RecyclerView) recyclerView);
+        }
+    };
 
     @Override
     protected void onDestroy() {

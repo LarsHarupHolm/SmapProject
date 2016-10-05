@@ -13,21 +13,16 @@ public class ParameterList {
     public static final List<Parameter> ITEMS = new ArrayList<>();
     public static final Map<String, Parameter> ITEM_MAP = new HashMap<>();
 
-    private static final int COUNT = 25;
-
-    static {
-        // Add some sample items.
-        for (int i = 1; i <= COUNT; i++) {
-            addItem(createDummyParameter(i));
+    public static void setParameters(List<Parameter> parameters) {
+        ITEMS.clear();
+        ITEM_MAP.clear();
+        for(Parameter parameter : parameters){
+            addItem(parameter);
         }
     }
 
     private static void addItem(Parameter item) {
         ITEMS.add(item);
         ITEM_MAP.put(Integer.toString(item.getId()), item);
-    }
-
-    private static Parameter createDummyParameter(int position) {
-        return new Parameter(position, "Parameter " + position, "Surname", "Volt", false);
     }
 }

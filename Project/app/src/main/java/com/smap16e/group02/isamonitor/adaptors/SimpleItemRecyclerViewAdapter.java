@@ -44,8 +44,9 @@ public class SimpleItemRecyclerViewAdapter
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
         holder.mIdView.setText(mValues.get(position).getName());
-        holder.mContentView.setText("Sample text. QWERTY123");
+        holder.mContentView.setText(mValues.get(position).getSurname());
 
+        // When user clicks on item in list
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
