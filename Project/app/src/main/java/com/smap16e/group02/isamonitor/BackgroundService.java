@@ -144,7 +144,7 @@ public class BackgroundService extends Service {
                         for(Parameter parameter : generalParameterList){
                             boolean addedToSubscribedList = false;
                             for(int parameterID : userParameterIDList){
-                                if(parameter.getId() == parameterID){
+                                if(parameter.id == parameterID){
                                     subscribedParameterList.add(parameter);
                                     addedToSubscribedList = true;
                                 }

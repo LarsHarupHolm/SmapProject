@@ -90,7 +90,7 @@ public class AddParameter extends AppCompatActivity implements AdapterView.OnIte
 
         parameterArrayList = new ArrayList<>();
         for(Parameter parameter: ParameterListActivity.notSubscribedParameterList){
-            testArray.add(parameter.getName() + parameter.getSurname());
+            testArray.add(parameter.name + parameter.surname);
             parameterArrayList.add(parameter);
         }
 
@@ -106,7 +106,7 @@ public class AddParameter extends AppCompatActivity implements AdapterView.OnIte
     }
 
     private void addParameterToUserSubscription(){
-        mService.addParameterSubscription(parameterArrayList.get((int) selectedParameter).getId());
+        mService.addParameterSubscription(parameterArrayList.get((int) selectedParameter).id);
     }
 
     @Override
