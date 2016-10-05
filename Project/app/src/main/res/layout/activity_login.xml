@@ -46,19 +46,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/log_in"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:backgroundTint="@color/colorAccent"
+        android:textColor="@color/white"/>
 
     <Button
         android:id="@+id/btn_logIn_signUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/register"
-        android:layout_gravity="center_horizontal"/>
+        android:text="@string/register_description"
+        android:layout_gravity="center_horizontal"
+        android:background="@null"
+        android:textAllCaps="false"
+        android:textColor="@color/colorAccentDark"/>
     <Button
         android:id="@+id/btn_lostPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@null"
         android:text="@string/forgot_password"
-        android:layout_gravity="center_horizontal"/>
+        android:layout_gravity="center_horizontal"
+        android:background="@null"
+        android:textAllCaps="false"
+        android:textColor="@color/colorAccentDark"/>
 </LinearLayout>
