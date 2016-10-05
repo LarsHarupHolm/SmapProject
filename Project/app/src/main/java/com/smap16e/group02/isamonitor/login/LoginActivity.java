@@ -23,7 +23,7 @@ import com.smap16e.group02.isamonitor.R;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private String TAG = "LoginActivity";
+    private final String TAG = "LoginActivity";
     public static final String EXTRA_EMAIL = "extra_email";
     public static final int REQ_REGISTERED_EMAIL = 1;
 
@@ -72,14 +72,15 @@ public class LoginActivity extends AppCompatActivity {
                         if(task.isSuccessful())
                         {
                             //Check if user is verified
-                            /***** todo: email is never sent - implement later
+                            /***** todo: email is never sent - implement later **/
                             FirebaseUser user = mAuth.getCurrentUser();
-                            if(user.isEmailVerified()) { */
+                            if(user.isEmailVerified()) {
                                 Intent loginFinishedIntent = new Intent(LoginActivity.this, ParameterListActivity.class);
                                 startActivity(loginFinishedIntent);
                                 finish(); //finish so User cannot re-enter login screen
-                            /*****} */
-                            Toast.makeText(LoginActivity.this, "Please verify your account before logging in", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(LoginActivity.this, "Please verify your account before logging in", Toast.LENGTH_LONG).show();
+                            }
                         } else {
                             Toast.makeText(LoginActivity.this, "Username or password incorrect", Toast.LENGTH_SHORT).show();
                         }
@@ -105,6 +106,12 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
             //Take the input from mail and send it to new window
+                String email = ((EditText)findViewById(R.id.login_email)).getText().toString();
+                Intent signUpIntent = new Intent(LoginActivity.this, ResetPasswordActivity.class);
+                if(!email.isEmpty() && email.contains("@")) {
+                    signUpIntent.putExtra(EXTRA_EMAIL, email);
+                }
+                startActivityForResult(signUpIntent, REQ_REGISTERED_EMAIL);
             }
         });
     }
@@ -117,8 +124,9 @@ public class LoginActivity extends AppCompatActivity {
             switch (requestCode)
             {
                 case REQ_REGISTERED_EMAIL:
-
                     //Todo: set email to registered email so it's ready for login
+                    String email = data.getStringExtra(EXTRA_EMAIL);
+                    ((EditText)findViewById(R.id.login_email)).setText(email);
                     break;
             }
         }

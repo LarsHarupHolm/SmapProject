@@ -16,12 +16,20 @@
         android:id="@+id/login_logo"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="9"
+        android:layout_weight="7"
         android:layout_marginTop="30dp"
         android:layout_gravity="center_horizontal"
         app:srcCompat="@drawable/ic_isa_vector_red_nobackground_shadow"
         android:tint="#ff0000"
         android:contentDescription="@string/isa_logo" />
+
+    <TextView
+        android:layout_marginTop="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Register new account"
+        android:textSize="20sp"
+        android:textAlignment="center"/>
     <EditText
         android:id="@+id/signUp_email"
         android:inputType="textEmailAddress"

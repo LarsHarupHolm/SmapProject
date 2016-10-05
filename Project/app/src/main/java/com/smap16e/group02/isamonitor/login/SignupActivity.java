@@ -12,7 +12,10 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.smap16e.group02.isamonitor.R;
@@ -22,7 +25,7 @@ import java.util.Objects;
 public class SignupActivity extends AppCompatActivity {
 
 
-    private String TAG = "SignupActivity";
+    private final String TAG = "SignupActivity";
     private final int MIN_PASSWORD_LENGTH = 6;
 
     private Button btnSignUp;
@@ -51,7 +54,7 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 final String email = ((EditText)findViewById(R.id.signUp_email)).getText().toString();
-                String password = ((EditText)findViewById(R.id.signUp_password)).getText().toString();
+                final String password = ((EditText)findViewById(R.id.signUp_password)).getText().toString();
 
                 //Check if email syntax
                 //check if passwords match
@@ -78,20 +81,33 @@ public class SignupActivity extends AppCompatActivity {
                             Log.d(TAG, "SignUp: " + task.isSuccessful());
                             if(task.isSuccessful())
                             {
+                                FirebaseUser user = mAuth.getCurrentUser();
+                                //Do I really need to reauthenticate here?
+                                AuthCredential credential = EmailAuthProvider.getCredential(email, password);
+                                user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if(task.isSuccessful()){
+                                            Log.d(TAG, "User is reauthenticated");
+                                        } else {
+                                            Log.d(TAG, task.getException().toString());
+                                        }
+                                    }
+                                });
                                 //Send verification Email
-                                /***** todo:not sending email - fix later
-                                 FirebaseUser user = mAuth.getCurrentUser();
+                                /***** todo:not sending email - fix later **/
                                  user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                if(task.isSuccessful()) {
-                                Log.d(TAG, "Verification Email sent");
-                                Toast.makeText(SignupActivity.this, "Verification email has been sent. Please verify your account", Toast.LENGTH_LONG).show();
-                                } else {
-                                Toast.makeText(SignupActivity.this, "Something went wrong, please try again", Toast.LENGTH_SHORT).show();
-                                }
-                                }
-                                }); */
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if(task.isSuccessful()) {
+                                        Log.d(TAG, "Verification Email sent to " + email);
+                                        Toast.makeText(SignupActivity.this, "Verification email has been sent. Please verify your account", Toast.LENGTH_LONG).show();
+                                        } else {
+                                            Toast.makeText(SignupActivity.this, " " + task.getException(), Toast.LENGTH_LONG).show();
+                                            Toast.makeText(SignupActivity.this, "Something went wrong, please contact support", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
 
                                 Intent returnIntent = new Intent();
                                 returnIntent.putExtra(LoginActivity.EXTRA_EMAIL, email);
@@ -99,7 +115,7 @@ public class SignupActivity extends AppCompatActivity {
                                 finish();
                             } else {
                                 Toast.makeText(SignupActivity.this, "Authentication failed." + task.getException(),
-                                        Toast.LENGTH_SHORT).show();
+                                        Toast.LENGTH_LONG).show();
                                 Log.d(TAG, task.getException().toString());
                                 finish();
                             }

@@ -10,4 +10,8 @@
     <string name="register">register</string>
     <string name="isa_logo">ISA logo</string>
     <string name="confirm_password">Confirm password</string>
+    <string name="forgot_password">I forgot my password</string>
+    <string name="submit">Submit</string>
+    <string name="reset_pw_description">Please enter and submit your email address, and we will send you an email to reset your password</string>
+    <string name="reset_pw_title">Reset your password</string>
 </resources>
