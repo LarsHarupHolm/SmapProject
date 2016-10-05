@@ -48,6 +48,24 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        fetchIfLoggedIn();
+    }
+
+    private void fetchIfLoggedIn() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if(user != null) {
+            //Redirect to list
+            Log.d(TAG, "LogIn: User already logged in, redirecting past login");
+            Intent loginFinishedIntent = new Intent(LoginActivity.this, ParameterListActivity.class);
+            startActivity(loginFinishedIntent);
+            finish(); //finish so User cannot re-enter login screen
+        }
+    }
+
     private void createOnClickListeners()
     {
         btnLogIn.setOnClickListener(new View.OnClickListener() {
@@ -72,7 +90,6 @@ public class LoginActivity extends AppCompatActivity {
                         if(task.isSuccessful())
                         {
                             //Check if user is verified
-                            /***** todo: email is never sent - implement later **/
                             FirebaseUser user = mAuth.getCurrentUser();
                             if(user.isEmailVerified()) {
                                 Intent loginFinishedIntent = new Intent(LoginActivity.this, ParameterListActivity.class);
