@@ -146,7 +146,7 @@ public class ParameterListActivity extends AppCompatActivity {
 
         switch(requestCode){
             case ADD_PARAMETER:
-                Toast.makeText(ParameterListActivity.this, "User selected parameter " + data.getLongExtra(RESULT_ID, -2), Toast.LENGTH_SHORT).show();
+                Log.i(TAG, "Added parameter to subscriptions");
         }
     }
     //endregion

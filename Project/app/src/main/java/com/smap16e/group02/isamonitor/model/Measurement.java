@@ -2,47 +2,13 @@ package com.smap16e.group02.isamonitor.model;
 
 /**
  * Created by KSJensen on 30/09/2016.
+ * References:
+ *  https://developer.android.com/training/articles/perf-tips.html#GettersSetters
  */
 
 public class Measurement {
-    private int id;
-    private int parameterId;
-    private double value;
-    private long measureTime;
-
-    public Measurement(){}
-
-    //region Getters and Setters
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getParameterId() {
-        return parameterId;
-    }
-
-    public void setParameterId(int parameterId) {
-        this.parameterId = parameterId;
-    }
-
-    public double getValue() {
-        return value;
-    }
-
-    public void setValue(double value) {
-        this.value = value;
-    }
-
-    public long getMeasureTime() {
-        return measureTime;
-    }
-
-    public void setMeasureTime(long measureTime) {
-        this.measureTime = measureTime;
-    }
-    //endregion
+    public int id;
+    public int parameterId;
+    public double value;
+    public long measureTime;
 }

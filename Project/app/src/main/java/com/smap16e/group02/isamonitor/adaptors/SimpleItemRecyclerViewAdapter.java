@@ -43,8 +43,8 @@ public class SimpleItemRecyclerViewAdapter
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).getName());
-        holder.mContentView.setText(mValues.get(position).getSurname());
+        holder.mIdView.setText(mValues.get(position).name);
+        holder.mContentView.setText(mValues.get(position).surname);
 
         // When user clicks on item in list
         holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -52,7 +52,7 @@ public class SimpleItemRecyclerViewAdapter
             public void onClick(View v) {
                 if (ParameterListActivity.modeTwoPane) {
                     Bundle arguments = new Bundle();
-                    arguments.putString(ParameterDetailFragment.ARG_ITEM_ID, Integer.toString(holder.mItem.getId()));
+                    arguments.putString(ParameterDetailFragment.ARG_ITEM_ID, Integer.toString(holder.mItem.id));
                     ParameterDetailFragment fragment = new ParameterDetailFragment();
                     fragment.setArguments(arguments);
 
@@ -62,7 +62,7 @@ public class SimpleItemRecyclerViewAdapter
                 } else {
                     Context context = v.getContext();
                     Intent intent = new Intent(context, ParameterDetailActivity.class);
-                    intent.putExtra(ParameterDetailFragment.ARG_ITEM_ID, Integer.toString(holder.mItem.getId()));
+                    intent.putExtra(ParameterDetailFragment.ARG_ITEM_ID, Integer.toString(holder.mItem.id));
 
                     context.startActivity(intent);
                 }

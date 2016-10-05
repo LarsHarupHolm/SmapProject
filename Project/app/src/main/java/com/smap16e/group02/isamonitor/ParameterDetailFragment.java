@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
@@ -30,6 +31,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static android.content.ContentValues.TAG;
 
@@ -47,6 +50,9 @@ public class ParameterDetailFragment extends Fragment {
     public static final String ARG_ITEM_ID = "item_id";
     public Parameter mItem;
     private TextView detailTextView;
+    private Handler handler;
+    private Timer timer;
+    private TimerTask task;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -68,11 +74,30 @@ public class ParameterDetailFragment extends Fragment {
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
-                appBarLayout.setTitle(mItem.getName());
+                appBarLayout.setTitle(mItem.name);
             }
         }
 
-        GetCurrentReading(mItem.getId());
+        handler = new Handler();
+        timer = new Timer();
+        task = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        new UpdateValueTask().execute(mItem.id);
+                    }
+                });
+            }
+        };
+        timer.schedule(task, 0, 1000*60); //Every minute
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        timer.cancel();
     }
 
     @Override
@@ -91,74 +116,68 @@ public class ParameterDetailFragment extends Fragment {
         return rootView;
     }
 
-    public void updateValue(double value){
-        detailTextView.setText(String.format("Current value: %.2f", value));
-    }
+    private class UpdateValueTask extends AsyncTask<Object, Object, String>{
+        private int parameterID;
 
-    public void GetCurrentReading(final int parameterID) {
+        @Override
+        protected String doInBackground(Object[] params) {
+            String result = null;
+            InputStream inputStream;
+            int length = 50;
 
-        final AsyncTask<Object, Object, String> task = new AsyncTask<Object, Object, String>() {
-            @Override
-            protected String doInBackground(Object[] params) {
-                String result = null;
-                InputStream inputStream;
-                int length = 100;
+            try {
+                parameterID = (int) params[0];
+                URL url = new URL(BackgroundService.APIurl + params[0]);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setReadTimeout(10000 /* milliseconds */);
+                urlConnection.setConnectTimeout(15000 /* milliseconds */);
+                urlConnection.setRequestMethod("GET");
+                urlConnection.setDoInput(true);
+                urlConnection.connect();
+                int status = urlConnection.getResponseCode();
 
-                try {
-                    URL url = new URL(BackgroundService.APIurl + parameterID);
-                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                    urlConnection.setReadTimeout(10000 /* milliseconds */);
-                    urlConnection.setConnectTimeout(15000 /* milliseconds */);
-                    urlConnection.setRequestMethod("GET");
-                    urlConnection.setDoInput(true);
-                    urlConnection.connect();
-                    int status = urlConnection.getResponseCode();
-
-                    switch (status) {
-                        case 200:
-                            inputStream = urlConnection.getInputStream();
-                            Reader reader = new InputStreamReader(inputStream, "UTF-8");
-                            char[] buffer = new char[length];
-                            reader.read(buffer);
-                            result = new String(buffer);
-                            inputStream.close();
-                            urlConnection.disconnect();
-                            break;
-                        case 502:
-                            Log.e(TAG, "No connection to server");
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                switch (status) {
+                    case 200:
+                        inputStream = urlConnection.getInputStream();
+                        Reader reader = new InputStreamReader(inputStream, "UTF-8");
+                        char[] buffer = new char[length];
+                        reader.read(buffer);
+                        result = new String(buffer);
+                        inputStream.close();
+                        urlConnection.disconnect();
+                        break;
+                    case 502:
+                        Log.e(TAG, "No connection to server");
                 }
-
-                return result;
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
-            @Override
-            protected void onPostExecute(String result) {
-                super.onPostExecute(result);
+            return result;
+        }
 
-                if (result != null) {
-                    Measurement measurement = buildMeasurement(result, parameterID);
-                    if(measurement != null){
-                        updateValue(measurement.getValue());
-                    }
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            if (result != null) {
+                Measurement measurement = buildMeasurement(result, parameterID);
+                if(measurement != null){
+                    detailTextView.setText(String.format("Current value: %.2f", measurement.value));
                 }
-
+            } else {
                 Toast.makeText(getActivity(), "No connection to server", Toast.LENGTH_SHORT).show();
             }
-        };
-
-        task.execute();
+        }
     }
 
     private Measurement buildMeasurement(String jsonString, int parameterID){
         Measurement result = new Measurement();
         try {
             JSONObject jsonObject = new JSONObject(jsonString);
-            result.setId(parameterID);
-            result.setValue(jsonObject.getDouble("v"));
-            result.setMeasureTime(jsonObject.getLong("m"));
+            result.id = parameterID;
+            result.value = jsonObject.getDouble("v");
+            result.measureTime =  jsonObject.getLong("m");
         } catch (JSONException e) {
             e.printStackTrace();
             return null;

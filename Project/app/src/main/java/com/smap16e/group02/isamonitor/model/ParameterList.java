@@ -23,6 +23,6 @@ public class ParameterList {
 
     private static void addItem(Parameter item) {
         ITEMS.add(item);
-        ITEM_MAP.put(Integer.toString(item.getId()), item);
+        ITEM_MAP.put(Integer.toString(item.id), item);
     }
 }
