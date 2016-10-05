@@ -57,12 +57,15 @@ public class LoginActivity extends AppCompatActivity {
 
     private void skipIfLoggedIn() {
         FirebaseUser user = mAuth.getCurrentUser();
+        //Only if user is verified
         if(user != null) {
-            //Redirect to list
-            Log.d(TAG, "LogIn: User already logged in, redirecting past login");
-            Intent loginFinishedIntent = new Intent(LoginActivity.this, ParameterListActivity.class);
-            startActivity(loginFinishedIntent);
-            finish(); //finish so User cannot re-enter login screen
+            if(user.isEmailVerified()) {
+                //Redirect to list
+                Log.d(TAG, "LogIn: User already logged in, redirecting past login");
+                Intent loginFinishedIntent = new Intent(LoginActivity.this, ParameterListActivity.class);
+                startActivity(loginFinishedIntent);
+                finish(); //finish so User cannot re-enter login screen
+            }
         }
     }
 
