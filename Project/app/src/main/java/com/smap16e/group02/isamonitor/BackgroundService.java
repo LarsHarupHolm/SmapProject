@@ -2,7 +2,6 @@ package com.smap16e.group02.isamonitor;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -14,19 +13,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.smap16e.group02.isamonitor.model.Measurement;
 import com.smap16e.group02.isamonitor.model.Parameter;
 import com.smap16e.group02.isamonitor.model.User;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,14 +28,8 @@ import java.util.List;
 public class BackgroundService extends Service {
 
     //region Properties
-    public static final String BROADCAST_NEW_READING_RESULT = "new reading result";
     public static final String BROADCAST_NEW_GENERALPARAMETERLIST = "generalParameterList";
     public static final String BROADCAST_NEW_USERPARAMETERLIST = "userParameterList";
-    public static final String BROADCAST_BINDING = "service binded";
-
-    public static final String MEASUREMENT_ID = "measurement id";
-    public static final String MEASUREMENT_VALUE = "measurement value";
-    public static final String MEASUREMENT_TIME = "measurement time";
 
     private static List<Parameter> generalParameterList;
     private static List<Parameter> subscribedParameterList;
@@ -55,7 +38,7 @@ public class BackgroundService extends Service {
     private List<Integer> userParameterIDList;
 
     private static final String TAG = "BackgroundService";
-    private String APIurl = "http://37.139.13.108/api/measurement/";
+    public static String APIurl = "http://37.139.13.108/api/measurement/";
     private String userID = "userIDSAMPLE";
     private DatabaseReference mDatabase;
 
@@ -70,21 +53,23 @@ public class BackgroundService extends Service {
 
     public class LocalBinder extends Binder {
         BackgroundService getService() {
-            broadCastNewInformation(BROADCAST_BINDING);
             return BackgroundService.this;
         }
     }
 
-    @Nullable
     @Override
-    public IBinder onBind(Intent intent) {
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+    public void onCreate() {
+        super.onCreate();
+        Log.d(TAG, "SERVICE CREATED");
 
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         fetchAPIUrl();
         fetchGeneralParameterList();
-
-        return mBinder;
     }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) { return mBinder; }
     //endregion
 
     //region Public methods
@@ -179,82 +164,6 @@ public class BackgroundService extends Service {
                     }
                 }
         );
-    }
-
-    public void GetCurrentReading(final int parameterID) {
-
-        final AsyncTask<Object, Object, String> task = new AsyncTask<Object, Object, String>() {
-            @Override
-            protected String doInBackground(Object[] params) {
-                String result = null;
-                InputStream inputStream;
-                int length = 100;
-
-                try {
-                    URL url = new URL(APIurl + parameterID);
-                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                    urlConnection.setReadTimeout(10000 /* milliseconds */);
-                    urlConnection.setConnectTimeout(15000 /* milliseconds */);
-                    urlConnection.setRequestMethod("GET");
-                    urlConnection.setDoInput(true);
-                    urlConnection.connect();
-                    int status = urlConnection.getResponseCode();
-
-                    switch (status) {
-                        case 200:
-                            inputStream = urlConnection.getInputStream();
-                            Reader reader = new InputStreamReader(inputStream, "UTF-8");
-                            char[] buffer = new char[length];
-                            reader.read(buffer);
-                            result = new String(buffer);
-                            inputStream.close();
-                            urlConnection.disconnect();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                return result;
-            }
-
-            @Override
-            protected void onPostExecute(String result) {
-                super.onPostExecute(result);
-
-                if (result != null) {
-                    Measurement measurement = buildMeasurement(result, parameterID);
-
-                    if (measurement != null) {
-                        broadCastNewInformation(measurement);
-                    }
-                }
-            }
-        };
-
-        task.execute();
-    }
-
-    private Measurement buildMeasurement(String jsonString, int parameterID){
-        Measurement result = new Measurement();
-        try {
-            JSONObject jsonObject = new JSONObject(jsonString);
-            result.setId(parameterID);
-            result.setValue(jsonObject.getDouble("v"));
-            result.setMeasureTime(jsonObject.getLong("m"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
-        return result;
-    }
-
-    private void broadCastNewInformation(Measurement measurement){
-        Intent broadcastIntent = new Intent();
-        broadcastIntent.setAction(BROADCAST_NEW_READING_RESULT);
-        broadcastIntent.putExtra(MEASUREMENT_ID, measurement.getId());
-        broadcastIntent.putExtra(MEASUREMENT_VALUE, measurement.getValue());
-        broadcastIntent.putExtra(MEASUREMENT_TIME, measurement.getMeasureTime());
-        LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
     }
 
     private void broadCastNewInformation(String info){

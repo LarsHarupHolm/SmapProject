@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -15,8 +16,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.smap16e.group02.isamonitor.model.Measurement;
 import com.smap16e.group02.isamonitor.model.Parameter;
 import com.smap16e.group02.isamonitor.model.ParameterList;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
  * A fragment representing a single Parameter detail screen.
@@ -56,6 +68,8 @@ public class ParameterDetailFragment extends Fragment {
                 appBarLayout.setTitle(mItem.getName());
             }
         }
+
+        GetCurrentReading(mItem.getId());
     }
 
     @Override
@@ -76,5 +90,71 @@ public class ParameterDetailFragment extends Fragment {
 
     public void updateValue(double value){
         detailTextView.setText(String.format("Current value: %.2f", value));
+    }
+
+    public void GetCurrentReading(final int parameterID) {
+
+        final AsyncTask<Object, Object, String> task = new AsyncTask<Object, Object, String>() {
+            @Override
+            protected String doInBackground(Object[] params) {
+                String result = null;
+                InputStream inputStream;
+                int length = 100;
+
+                try {
+                    URL url = new URL(BackgroundService.APIurl + parameterID);
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setReadTimeout(10000 /* milliseconds */);
+                    urlConnection.setConnectTimeout(15000 /* milliseconds */);
+                    urlConnection.setRequestMethod("GET");
+                    urlConnection.setDoInput(true);
+                    urlConnection.connect();
+                    int status = urlConnection.getResponseCode();
+
+                    switch (status) {
+                        case 200:
+                            inputStream = urlConnection.getInputStream();
+                            Reader reader = new InputStreamReader(inputStream, "UTF-8");
+                            char[] buffer = new char[length];
+                            reader.read(buffer);
+                            result = new String(buffer);
+                            inputStream.close();
+                            urlConnection.disconnect();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                return result;
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
+
+                if (result != null) {
+                    Measurement measurement = buildMeasurement(result, parameterID);
+                    if(measurement != null){
+                        updateValue(measurement.getValue());
+                    }
+                }
+            }
+        };
+
+        task.execute();
+    }
+
+    private Measurement buildMeasurement(String jsonString, int parameterID){
+        Measurement result = new Measurement();
+        try {
+            JSONObject jsonObject = new JSONObject(jsonString);
+            result.setId(parameterID);
+            result.setValue(jsonObject.getDouble("v"));
+            result.setMeasureTime(jsonObject.getLong("m"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return result;
     }
 }
