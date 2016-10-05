@@ -8,6 +8,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -61,6 +63,13 @@ public class BackgroundService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "SERVICE CREATED");
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            userID = user.getUid();
+        } else {
+            // No user is signed in
+        }
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
         fetchAPIUrl();

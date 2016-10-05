@@ -18,8 +18,12 @@ import com.google.firebase.auth.EmailAuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.smap16e.group02.isamonitor.R;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class SignupActivity extends AppCompatActivity {
@@ -30,12 +34,15 @@ public class SignupActivity extends AppCompatActivity {
 
     private Button btnSignUp;
     private FirebaseAuth mAuth;
+    private DatabaseReference mDatabase;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         btnSignUp = (Button)findViewById(R.id.btn_signUp_signUp);
         mAuth = FirebaseAuth.getInstance();
 
@@ -108,6 +115,11 @@ public class SignupActivity extends AppCompatActivity {
                                         }
                                     }
                                 });
+
+                                // Add user to database
+                                Map<String, String> map = new HashMap<>();
+                                map.put("email", user.getEmail());
+                                mDatabase.child("users").child(user.getUid()).child("email").setValue(map);
 
                                 Intent returnIntent = new Intent();
                                 returnIntent.putExtra(LoginActivity.EXTRA_EMAIL, email);
