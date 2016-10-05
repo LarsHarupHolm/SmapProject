@@ -51,11 +51,11 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
-        fetchIfLoggedIn();
+        //Skip login if user is already logged in.
+        skipIfLoggedIn();
     }
 
-    private void fetchIfLoggedIn() {
+    private void skipIfLoggedIn() {
         FirebaseUser user = mAuth.getCurrentUser();
         if(user != null) {
             //Redirect to list
@@ -141,7 +141,6 @@ public class LoginActivity extends AppCompatActivity {
             switch (requestCode)
             {
                 case REQ_REGISTERED_EMAIL:
-                    //Todo: set email to registered email so it's ready for login
                     String email = data.getStringExtra(EXTRA_EMAIL);
                     ((EditText)findViewById(R.id.login_email)).setText(email);
                     break;

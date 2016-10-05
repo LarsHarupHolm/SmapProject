@@ -7,7 +7,8 @@
     <string name="password">password</string>
     <string name="e_mail">e-mail</string>
     <string name="log_in">Log in</string>
-    <string name="register">register</string>
+    <string name="register">Register</string>
+    <string name="register_description">I don\'t have an account</string>
     <string name="isa_logo">ISA logo</string>
     <string name="confirm_password">Confirm password</string>
     <string name="forgot_password">I forgot my password</string>
