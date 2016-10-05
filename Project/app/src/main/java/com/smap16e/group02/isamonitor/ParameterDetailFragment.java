@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.smap16e.group02.isamonitor.model.Measurement;
 import com.smap16e.group02.isamonitor.model.Parameter;
@@ -29,6 +30,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * A fragment representing a single Parameter detail screen.
@@ -120,6 +123,9 @@ public class ParameterDetailFragment extends Fragment {
                             result = new String(buffer);
                             inputStream.close();
                             urlConnection.disconnect();
+                            break;
+                        case 502:
+                            Log.e(TAG, "No connection to server");
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -138,6 +144,8 @@ public class ParameterDetailFragment extends Fragment {
                         updateValue(measurement.getValue());
                     }
                 }
+
+                Toast.makeText(getActivity(), "No connection to server", Toast.LENGTH_SHORT).show();
             }
         };
 
