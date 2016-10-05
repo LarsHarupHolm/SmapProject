@@ -28,14 +28,12 @@ import java.util.Objects;
 
 public class SignupActivity extends AppCompatActivity {
 
-
     private final String TAG = "SignupActivity";
     private final int MIN_PASSWORD_LENGTH = 6;
 
     private Button btnSignUp;
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

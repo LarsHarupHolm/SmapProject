@@ -30,22 +30,19 @@ import java.util.List;
 public class BackgroundService extends Service {
 
     //region Properties
+    private static final String TAG = "BackgroundService";
     public static final String BROADCAST_NEW_GENERALPARAMETERLIST = "generalParameterList";
     public static final String BROADCAST_NEW_USERPARAMETERLIST = "userParameterList";
+    public static String APIurl = "http://37.139.13.108/api/measurement/";
 
-    private static List<Parameter> generalParameterList;
-    private static List<Parameter> subscribedParameterList;
-    private static List<Parameter> notSubscribedParameterList;
-
+    private List<Parameter> generalParameterList;
+    private List<Parameter> subscribedParameterList;
+    private List<Parameter> notSubscribedParameterList;
     private List<Integer> userParameterIDList;
 
-    private static final String TAG = "BackgroundService";
-    public static String APIurl = "http://37.139.13.108/api/measurement/";
     private String userID = "userIDSAMPLE";
     private DatabaseReference mDatabase;
-
     public boolean hasParameterList = false;
-
     private final IBinder mBinder = new LocalBinder();
     //endregion
 
@@ -138,7 +135,12 @@ public class BackgroundService extends Service {
                         userParameterIDList = new ArrayList<>();
                         subscribedParameterList = new ArrayList<>();
                         notSubscribedParameterList = new ArrayList<>();
-                        userParameterIDList = user.subscribedParameters;
+
+                        if(user.subscribedParameters != null)
+                            userParameterIDList = user.subscribedParameters;
+                        else
+                            userParameterIDList = new ArrayList<>();
+
                         for(Parameter parameter : generalParameterList){
                             boolean addedToSubscribedList = false;
                             for(int parameterID : userParameterIDList){
