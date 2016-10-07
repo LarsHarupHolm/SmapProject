@@ -46,6 +46,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/log_in"
+        android:layout_marginTop="10dp"
         android:layout_gravity="center_horizontal"
         android:backgroundTint="@color/colorAccent"
         android:textColor="@color/white"/>
@@ -58,7 +59,9 @@
         android:layout_gravity="center_horizontal"
         android:background="@null"
         android:textAllCaps="false"
-        android:textColor="@color/colorAccentDark"/>
+        android:textColor="@color/colorAccentDark"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="-5dp"/>
     <Button
         android:id="@+id/btn_lostPassword"
         android:layout_width="wrap_content"
@@ -67,5 +70,6 @@
         android:layout_gravity="center_horizontal"
         android:background="@null"
         android:textAllCaps="false"
-        android:textColor="@color/colorAccentDark"/>
+        android:textColor="@color/colorAccentDark"
+        android:layout_marginBottom="-20dp"/>
 </LinearLayout>
