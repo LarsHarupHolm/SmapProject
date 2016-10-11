@@ -39,6 +39,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/okButton"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:backgroundTint="@color/colorAccent"
+        android:textColor="@color/white"/>
 
 </RelativeLayout>
