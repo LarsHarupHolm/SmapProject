@@ -2,6 +2,7 @@ package com.smap16e.group02.isamonitor;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -31,18 +32,22 @@ public class BackgroundService extends Service {
 
     //region Properties
     private static final String TAG = "BackgroundService";
-    public static final String BROADCAST_NEW_GENERALPARAMETERLIST = "generalParameterList";
-    public static final String BROADCAST_NEW_USERPARAMETERLIST = "userParameterList";
+    public static final String BROADCAST_NEW_PARAMETERINFO = "userParameterList";
     public static String APIurl = "http://37.139.13.108/api/measurement/";
 
     private List<Parameter> generalParameterList;
-    private List<Parameter> subscribedParameterList;
-    private List<Parameter> notSubscribedParameterList;
+    public List<Parameter> subscribedParameterList;
+    public List<Parameter> notSubscribedParameterList;
     private List<Integer> userParameterIDList;
 
     private String userID = "userIDSAMPLE";
     private DatabaseReference mDatabase;
-    public boolean hasParameterList = false;
+    private DatabaseReference mGeneralParametersReference;
+    private DatabaseReference mUserParametersReference;
+    private ValueEventListener mGeneralParametersListener;
+    private ValueEventListener mUserParametersListener;
+    public boolean hasGeneralParameterList = false;
+    private boolean hasUserParameterList = false;
     private final IBinder mBinder = new LocalBinder();
     //endregion
 
@@ -61,16 +66,34 @@ public class BackgroundService extends Service {
         super.onCreate();
         Log.d(TAG, "SERVICE CREATED");
 
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             userID = user.getUid();
         } else {
-            // No user is signed in
+            Log.e(TAG, "INVALID USER!");
+            return;
         }
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mGeneralParametersReference = FirebaseDatabase.getInstance().getReference().child("parameters");
+        mUserParametersReference = FirebaseDatabase.getInstance().getReference().child("users").child(userID);
+
         fetchAPIUrl();
-        fetchGeneralParameterList();
+        subscribeToGeneralParameterList();
+        subscribeToUserParameterList();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (mGeneralParametersListener != null) {
+            mGeneralParametersReference.removeEventListener(mGeneralParametersListener);
+        }
+        if (mUserParametersListener != null) {
+            mUserParametersReference.removeEventListener(mUserParametersListener);
+        }
     }
 
     @Nullable
@@ -78,87 +101,95 @@ public class BackgroundService extends Service {
     public IBinder onBind(Intent intent) { return mBinder; }
     //endregion
 
-    //region Public methods
-    public List<Parameter> getNotSubscribedParameterList(){ return notSubscribedParameterList; }
-
-    public List<Parameter> getSubscribedParameterList(){
-        return subscribedParameterList;
-    }
-
     public void addParameterSubscription(int parameterID){
         if(!userParameterIDList.contains(parameterID))
             userParameterIDList.add(parameterID);
 
         mDatabase.child("users").child(userID).child("subscribedParameters").setValue(userParameterIDList);
-
-        fetchUserParameterList();
     }
-    //endregion
 
     //region Private methods
-    private void fetchGeneralParameterList(){
-        mDatabase.child("parameters").addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Log.e(TAG, "Reading parameters from database...");
+    private void subscribeToGeneralParameterList(){
+        ValueEventListener generalParameterListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.e(TAG, "Reading parameters from database...");
 
-                        generalParameterList = new ArrayList<>();
-                        for(DataSnapshot parameterSnapShot: dataSnapshot.getChildren()){
-                            Parameter parameter = parameterSnapShot.getValue(Parameter.class);
-                            generalParameterList.add(parameter);
-                        }
-                        broadCastNewInformation(BROADCAST_NEW_GENERALPARAMETERLIST);
-                        hasParameterList = true;
-                        fetchUserParameterList();
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.w(TAG, "getParameters:onCancelled", databaseError.toException());
-                    }
+                generalParameterList = new ArrayList<>();
+                for(DataSnapshot parameterSnapShot: dataSnapshot.getChildren()){
+                    Parameter parameter = parameterSnapShot.getValue(Parameter.class);
+                    generalParameterList.add(parameter);
                 }
-        );
+                hasGeneralParameterList = true;
+
+                if(hasUserParameterList)
+                    new BuildUserParameterList().execute();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "getParameters:onCancelled", databaseError.toException());
+            }
+        };
+
+        mGeneralParametersReference.addValueEventListener(generalParameterListener);
+        mGeneralParametersListener = generalParameterListener;
     }
 
-    private void fetchUserParameterList(){
-        mDatabase.child("users").child(userID).addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Log.e(TAG, "Reading user parameters from database...");
+    private void subscribeToUserParameterList(){
+        ValueEventListener userParameterListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.e(TAG, "Reading user parameters from database...");
 
-                        User user = dataSnapshot.getValue(User.class);
-                        userParameterIDList = new ArrayList<>();
-                        subscribedParameterList = new ArrayList<>();
-                        notSubscribedParameterList = new ArrayList<>();
+                User user = dataSnapshot.getValue(User.class);
+                userParameterIDList = new ArrayList<>();
+                subscribedParameterList = new ArrayList<>();
+                notSubscribedParameterList = new ArrayList<>();
 
-                        if(user.subscribedParameters != null)
-                            userParameterIDList = user.subscribedParameters;
-                        else
-                            userParameterIDList = new ArrayList<>();
+                if(user.subscribedParameters != null){
+                    userParameterIDList = user.subscribedParameters;
+                    hasUserParameterList = true;
+                }
+                else
+                    userParameterIDList = new ArrayList<>();
 
-                        for(Parameter parameter : generalParameterList){
-                            boolean addedToSubscribedList = false;
-                            for(int parameterID : userParameterIDList){
-                                if(parameter.id == parameterID){
-                                    subscribedParameterList.add(parameter);
-                                    addedToSubscribedList = true;
-                                }
-                            }
-                            if(!addedToSubscribedList){
-                                notSubscribedParameterList.add(parameter);
-                            }
-                        }
-                        broadCastNewInformation(BROADCAST_NEW_USERPARAMETERLIST);
-                    }
+                if(hasGeneralParameterList)
+                    new BuildUserParameterList().execute();
+            }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.w(TAG, "getUserList:onCancelled", databaseError.toException());
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "getUserList:onCancelled", databaseError.toException());
+            }
+        };
+
+        mUserParametersReference.addValueEventListener(userParameterListener);
+        mUserParametersListener = userParameterListener;
+    }
+
+    private class BuildUserParameterList extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            for(Parameter parameter : generalParameterList){
+                boolean addedToSubscribedList = false;
+                for(int parameterID : userParameterIDList){
+                    if(parameter.id == parameterID){
+                        subscribedParameterList.add(parameter);
+                        addedToSubscribedList = true;
                     }
                 }
-        );
+                if(!addedToSubscribedList){
+                    notSubscribedParameterList.add(parameter);
+                }
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(Void result) {
+            broadCastNewInformation(BROADCAST_NEW_PARAMETERINFO);
+        }
     }
 
     private void fetchAPIUrl(){

@@ -17,13 +17,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.smap16e.group02.isamonitor.adaptors.SimpleItemRecyclerViewAdapter;
-import com.smap16e.group02.isamonitor.model.Parameter;
 import com.smap16e.group02.isamonitor.model.ParameterList;
-
-import java.util.List;
 
 /**
  * References:
@@ -37,9 +33,6 @@ public class ParameterListActivity extends AppCompatActivity {
     private FragmentManager fragmentManager;
     private static final String TAG = "ParameterListActivity";
     private View recyclerView;
-
-    private static List<Parameter> subscribedParameterList;
-    public static List<Parameter> notSubscribedParameterList;
 
     //region Service binding
     BackgroundService mService;
@@ -89,7 +82,7 @@ public class ParameterListActivity extends AppCompatActivity {
         bindService();
 
         IntentFilter filter = new IntentFilter();
-        filter.addAction(BackgroundService.BROADCAST_NEW_USERPARAMETERLIST);
+        filter.addAction(BackgroundService.BROADCAST_NEW_PARAMETERINFO);
         LocalBroadcastManager.getInstance(this).registerReceiver(onServiceResult, filter);
 
         fragmentManager = getSupportFragmentManager();
@@ -124,9 +117,10 @@ public class ParameterListActivity extends AppCompatActivity {
     private BroadcastReceiver onServiceResult = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            subscribedParameterList = mService.getSubscribedParameterList();
-            notSubscribedParameterList = mService.getNotSubscribedParameterList();
-            ParameterList.setParameters(subscribedParameterList);
+            if(mService.subscribedParameterList == null)
+                return;
+
+            ParameterList.setParameters(mService.subscribedParameterList);
             setupRecyclerView((RecyclerView) recyclerView);
         }
     };
