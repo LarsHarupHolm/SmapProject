@@ -9,22 +9,30 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.ListViewAutoScrollHelper;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Spinner;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.smap16e.group02.isamonitor.adaptors.AddParameterAdapter;
+import com.smap16e.group02.isamonitor.model.AddParameterModel;
 import com.smap16e.group02.isamonitor.model.Parameter;
 
 import java.util.ArrayList;
 
 public class AddParameter extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+    private String TAG = "AddParameterActivity";
     private long selectedParameter = -1;
-    private Spinner spinner;
-    private ArrayList<Parameter> parameterArrayList;
+    private ArrayList<AddParameterModel> addParameterModelArrayList;
+    private AddParameterAdapter mAdapter;
 
+    private ListView mListView;
     //region Service binding
     BackgroundService mService;
     boolean mBound = false;
@@ -37,8 +45,8 @@ public class AddParameter extends AppCompatActivity implements AdapterView.OnIte
             BackgroundService.LocalBinder binder = (BackgroundService.LocalBinder) service;
             mService = binder.getService();
 
-            if(mService.notSubscribedParameterList != null){
-                populateSpinner();
+            if(mService.generalParameterList != null && mService.subscribedParameterList != null){
+                populateList();
             }
             mBound = true;
         }
@@ -72,6 +80,8 @@ public class AddParameter extends AppCompatActivity implements AdapterView.OnIte
         filter.addAction(BackgroundService.BROADCAST_NEW_PARAMETERINFO);
         LocalBroadcastManager.getInstance(this).registerReceiver(onServiceResult, filter);
 
+        mListView = (ListView)findViewById(R.id.add_parameter_list);
+
         Button cancelButton = (Button) findViewById(R.id.cancelButton);
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,17 +103,17 @@ public class AddParameter extends AppCompatActivity implements AdapterView.OnIte
                 finish();
             }
         });
-        spinner = (Spinner) findViewById(R.id.spinner);
-        spinner.setOnItemSelectedListener(this);
+        //spinner = (Spinner) findViewById(R.id.spinner);
+        //spinner.setOnItemSelectedListener(this);
 
-        if(mService != null && mService.notSubscribedParameterList != null)
-            populateSpinner();
+        if(mService != null && mService.generalParameterList != null && mService.subscribedParameterList != null)
+            populateList();
     }
 
     private BroadcastReceiver onServiceResult = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            populateSpinner();
+            populateList();
         }
     };
 
@@ -113,21 +123,35 @@ public class AddParameter extends AppCompatActivity implements AdapterView.OnIte
         unbindService();
     }
 
-    private void populateSpinner(){
-        ArrayList<String> testArray = new ArrayList<>();
-        parameterArrayList = new ArrayList<>();
-        for(Parameter parameter: mService.notSubscribedParameterList){
-            testArray.add(parameter.name + parameter.surname);
-            parameterArrayList.add(parameter);
+    private void populateList() {
+        //Get all parameters
+        Log.d(TAG, "populateList");
+        //Get id's of subscribed to
+        addParameterModelArrayList = new ArrayList<>();
+        for (Parameter parameter : mService.generalParameterList)
+        {
+            boolean isSubscribed = mService.subscribedParameterList.contains(parameter);
+            addParameterModelArrayList.add(new AddParameterModel(
+                    parameter.id,
+                    parameter.name,
+                    parameter.surname,
+                    isSubscribed));
         }
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(AddParameter.this, android.R.layout.simple_dropdown_item_1line, testArray);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+        if(mListView != null) {
+            mAdapter = new AddParameterAdapter(AddParameter.this, android.R.layout.list_content, addParameterModelArrayList);
+            mListView.setAdapter(mAdapter);
+        }
     }
 
     private void addParameterToUserSubscription(){
-        mService.addParameterSubscription(parameterArrayList.get((int) selectedParameter).id);
+        if(mAdapter.ParameterModels == null) return;
+        ArrayList<Integer> parameterIds = new ArrayList<>();
+        for(AddParameterModel model : mAdapter.ParameterModels) {
+            if(model.isChecked) {
+                parameterIds.add(model.id);
+            }
+        }
+        mService.addParameterListSubscription(parameterIds);
     }
 
     @Override

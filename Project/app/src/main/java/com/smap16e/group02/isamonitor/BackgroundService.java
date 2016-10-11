@@ -19,6 +19,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.smap16e.group02.isamonitor.model.Parameter;
 import com.smap16e.group02.isamonitor.model.User;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class BackgroundService extends Service {
     public static final String BROADCAST_NEW_PARAMETERINFO = "userParameterList";
     public static String APIurl = "http://139.59.152.53/api/measurement/";
 
-    private List<Parameter> generalParameterList;
+    public List<Parameter> generalParameterList;
     public List<Parameter> subscribedParameterList;
     public List<Parameter> notSubscribedParameterList;
     private List<Integer> userParameterIDList;
@@ -107,11 +108,12 @@ public class BackgroundService extends Service {
     public IBinder onBind(Intent intent) { return mBinder; }
     //endregion
 
-    public void addParameterSubscription(int parameterID){
-        if(!userParameterIDList.contains(parameterID))
-            userParameterIDList.add(parameterID);
-
-        mDatabase.child("users").child(userID).child("subscribedParameters").setValue(userParameterIDList);
+    public void addParameterListSubscription(ArrayList<Integer> parameterIds)
+    {
+        if(parameterIds != null) {
+            userParameterIDList = parameterIds;
+            mDatabase.child("users").child(userID).child("subscribedParameters").setValue(userParameterIDList);
+        }
     }
 
     //region Private methods
