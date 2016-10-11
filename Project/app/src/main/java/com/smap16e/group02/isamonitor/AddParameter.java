@@ -72,6 +72,7 @@ public class AddParameter extends AppCompatActivity implements AdapterView.OnIte
         });
 
         Button okButton = (Button) findViewById(R.id.okButton);
+        //todo: Change to checkbox check yo
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,10 +86,10 @@ public class AddParameter extends AppCompatActivity implements AdapterView.OnIte
 
         final ArrayList<String> testArray;
         testArray = new ArrayList<>();
-        spinner = (Spinner) findViewById(R.id.spinner);
-        spinner.setOnItemSelectedListener(this);
+        //spinner = (Spinner) findViewById(R.id.spinner); //*****//
+        //spinner.setOnItemSelectedListener(this); //*****//
 
-        parameterArrayList = new ArrayList<>();
+        parameterArrayList = new ArrayList<>(); //*****//
         for(Parameter parameter: ParameterListActivity.notSubscribedParameterList){
             testArray.add(parameter.name + parameter.surname);
             parameterArrayList.add(parameter);
