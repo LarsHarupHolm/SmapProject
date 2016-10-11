@@ -6,7 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -19,7 +21,13 @@ import android.util.Log;
 import android.view.View;
 
 import com.smap16e.group02.isamonitor.adaptors.SimpleItemRecyclerViewAdapter;
+import com.smap16e.group02.isamonitor.model.Measurement;
+import com.smap16e.group02.isamonitor.model.Parameter;
 import com.smap16e.group02.isamonitor.model.ParameterList;
+
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * References:
@@ -33,6 +41,9 @@ public class ParameterListActivity extends AppCompatActivity {
     private FragmentManager fragmentManager;
     private static final String TAG = "ParameterListActivity";
     private View recyclerView;
+    private WebAPIHelper webAPIHelper;
+    private Handler handler;
+    private Timer timer;
 
     //region Service binding
     BackgroundService mService;
@@ -78,6 +89,7 @@ public class ParameterListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parameter_list);
+        webAPIHelper = new WebAPIHelper();
 
         bindService();
 
@@ -112,6 +124,20 @@ public class ParameterListActivity extends AppCompatActivity {
                 startActivityForResult(i, ADD_PARAMETER);
             }
         });
+
+        handler = new Handler();
+        timer = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        new UpdateReadings().execute();
+                    }
+                });
+            }
+        };
+        timer.schedule(task, 0, 1000*20); //Every 20 seconds
     }
 
     private BroadcastReceiver onServiceResult = new BroadcastReceiver() {
@@ -119,6 +145,8 @@ public class ParameterListActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             if(mService.subscribedParameterList == null)
                 return;
+
+            new UpdateReadings().execute();
 
             ParameterList.setParameters(mService.subscribedParameterList);
             setupRecyclerView((RecyclerView) recyclerView);
@@ -129,6 +157,7 @@ public class ParameterListActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unbindService();
+        timer.cancel();
     }
 
     @Override
@@ -144,4 +173,30 @@ public class ParameterListActivity extends AppCompatActivity {
         }
     }
     //endregion
+
+    private class UpdateReadings extends AsyncTask<Object, Object, List<Measurement>> {
+        @Override
+        protected List<Measurement> doInBackground(Object[] params) {
+            if(mService != null && mService.subscribedParameterList != null)
+                return webAPIHelper.getParameterMeasurements();
+            else
+                return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<Measurement> result) {
+            super.onPostExecute(result);
+
+            if (result != null && mService != null && mService.subscribedParameterList != null) {
+                List<Parameter> parameterList = mService.subscribedParameterList;
+                for (Parameter parameter : parameterList) {
+                    parameter.reading = result.get(parameter.id - 1).value;
+                }
+                ParameterList.setParameters(parameterList);
+                setupRecyclerView((RecyclerView) recyclerView);
+            } else {
+                // Error handling
+            }
+        }
+    }
 }

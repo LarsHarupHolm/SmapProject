@@ -33,7 +33,7 @@ public class BackgroundService extends Service {
     //region Properties
     private static final String TAG = "BackgroundService";
     public static final String BROADCAST_NEW_PARAMETERINFO = "userParameterList";
-    public static String APIurl = "http://37.139.13.108/api/measurement/";
+    public static String APIurl = "http://139.59.152.53/api/measurement/";
 
     private List<Parameter> generalParameterList;
     public List<Parameter> subscribedParameterList;
@@ -44,8 +44,10 @@ public class BackgroundService extends Service {
     private DatabaseReference mDatabase;
     private DatabaseReference mGeneralParametersReference;
     private DatabaseReference mUserParametersReference;
+    private DatabaseReference mSettingsReference;
     private ValueEventListener mGeneralParametersListener;
     private ValueEventListener mUserParametersListener;
+    private ValueEventListener mSettingsListener;
     public boolean hasGeneralParameterList = false;
     private boolean hasUserParameterList = false;
     private final IBinder mBinder = new LocalBinder();
@@ -78,8 +80,9 @@ public class BackgroundService extends Service {
 
         mGeneralParametersReference = FirebaseDatabase.getInstance().getReference().child("parameters");
         mUserParametersReference = FirebaseDatabase.getInstance().getReference().child("users").child(userID);
+        mSettingsReference = FirebaseDatabase.getInstance().getReference().child("settings");
 
-        fetchAPIUrl();
+        subscribeToSettings();
         subscribeToGeneralParameterList();
         subscribeToUserParameterList();
     }
@@ -93,6 +96,9 @@ public class BackgroundService extends Service {
         }
         if (mUserParametersListener != null) {
             mUserParametersReference.removeEventListener(mUserParametersListener);
+        }
+        if (mSettingsListener != null) {
+            mSettingsReference.removeEventListener(mSettingsListener);
         }
     }
 
@@ -192,20 +198,21 @@ public class BackgroundService extends Service {
         }
     }
 
-    private void fetchAPIUrl(){
-        mDatabase.child("settings").child("webAPIUrl").addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        APIurl = (String) dataSnapshot.getValue();
-                    }
+    private void subscribeToSettings(){
+        ValueEventListener settingsListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                APIurl = (String) dataSnapshot.child("webAPIUrl").getValue();
+            }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.w(TAG, "getAPIUrl:onCancelled", databaseError.toException());
-                    }
-                }
-        );
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "getAPIUrl:onCancelled", databaseError.toException());
+            }
+        };
+
+        mSettingsReference.addValueEventListener(settingsListener);
+        mSettingsListener = settingsListener;
     }
 
     private void broadCastNewInformation(String info){

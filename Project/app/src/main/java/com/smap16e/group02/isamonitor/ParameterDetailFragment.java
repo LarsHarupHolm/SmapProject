@@ -18,6 +18,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.smap16e.group02.isamonitor.model.Measurement;
 import com.smap16e.group02.isamonitor.model.Parameter;
 import com.smap16e.group02.isamonitor.model.ParameterList;
@@ -53,6 +59,7 @@ public class ParameterDetailFragment extends Fragment {
     private Handler handler;
     private Timer timer;
     private TimerTask task;
+    private WebAPIHelper webAPIHelper;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -64,6 +71,7 @@ public class ParameterDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        webAPIHelper = new WebAPIHelper();
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             // Load the dummy content specified by the fragment
@@ -90,7 +98,7 @@ public class ParameterDetailFragment extends Fragment {
                 });
             }
         };
-        timer.schedule(task, 0, 1000*60); //Every minute
+        timer.schedule(task, 0, 1000*20); //Every 20 seconds
     }
 
     @Override
@@ -121,39 +129,8 @@ public class ParameterDetailFragment extends Fragment {
 
         @Override
         protected String doInBackground(Object[] params) {
-            String result = null;
-            InputStream inputStream;
-            int length = 50;
-
-            try {
-                parameterID = (int) params[0];
-                URL url = new URL(BackgroundService.APIurl + params[0]);
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setReadTimeout(10000 /* milliseconds */);
-                urlConnection.setConnectTimeout(15000 /* milliseconds */);
-                urlConnection.setRequestMethod("GET");
-                urlConnection.setDoInput(true);
-                urlConnection.connect();
-                int status = urlConnection.getResponseCode();
-
-                switch (status) {
-                    case 200:
-                        inputStream = urlConnection.getInputStream();
-                        Reader reader = new InputStreamReader(inputStream, "UTF-8");
-                        char[] buffer = new char[length];
-                        reader.read(buffer);
-                        result = new String(buffer);
-                        inputStream.close();
-                        urlConnection.disconnect();
-                        break;
-                    case 502:
-                        Log.e(TAG, "No connection to server");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return result;
+            parameterID = (int) params[0];
+            return webAPIHelper.getParameterMeasurement(parameterID);
         }
 
         @Override
@@ -161,27 +138,16 @@ public class ParameterDetailFragment extends Fragment {
             super.onPostExecute(result);
 
             if (result != null) {
-                Measurement measurement = buildMeasurement(result, parameterID);
+                Measurement measurement = webAPIHelper.buildMeasurement(result, parameterID);
                 if(measurement != null){
                     detailTextView.setText(String.format("Current value: %.2f", measurement.value));
                 }
             } else {
-                Toast.makeText(getActivity(), "No connection to server", Toast.LENGTH_SHORT).show();
+                if(getActivity() != null)
+                    Toast.makeText(getActivity(), "No connection to server", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    private Measurement buildMeasurement(String jsonString, int parameterID){
-        Measurement result = new Measurement();
-        try {
-            JSONObject jsonObject = new JSONObject(jsonString);
-            result.id = parameterID;
-            result.value = jsonObject.getDouble("v");
-            result.measureTime =  jsonObject.getLong("m");
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
-        return result;
-    }
+
 }
