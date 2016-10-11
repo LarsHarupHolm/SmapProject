@@ -16,14 +16,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.smap16e.group02.isamonitor.adaptors.SimpleItemRecyclerViewAdapter;
+import com.smap16e.group02.isamonitor.login.LoginActivity;
 import com.smap16e.group02.isamonitor.model.ParameterList;
 
 /**
  * References:
  *  https://developer.android.com/reference/android/app/Service.html
+ *  https://developer.android.com/training/appbar/setting-up.html
+ *  https://developer.android.com/training/appbar/actions.html
  */
 public class ParameterListActivity extends AppCompatActivity {
 
@@ -78,6 +86,9 @@ public class ParameterListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parameter_list);
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
 
         bindService();
 
@@ -144,4 +155,29 @@ public class ParameterListActivity extends AppCompatActivity {
         }
     }
     //endregion
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.action_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_logout:
+                //Log out with firebase auth and return to login.
+                FirebaseAuth auth = FirebaseAuth.getInstance();
+                String email = auth.getCurrentUser().getEmail();
+                auth.signOut();
+
+                Intent i = new Intent(ParameterListActivity.this, LoginActivity.class);
+                i.putExtra(LoginActivity.EXTRA_EMAIL, email);
+                startActivity(i);
+                finish();
+                return true;
+        }
+        return false;
+    }
 }
