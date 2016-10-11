@@ -18,6 +18,7 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.Inflater;
 
 /**
  * Created by Lars on 11-10-2016.
@@ -26,34 +27,36 @@ import java.util.List;
 public class AddParameterAdapter extends ArrayAdapter <AddParameterModel> {
 
     private Context mContext;
-    private AddParameterModel [] mParameterModels;
+    private LayoutInflater mInflater;
+    public ArrayList<AddParameterModel> ParameterModels;
 
-    public AddParameterAdapter(Context context, int resource, AddParameterModel[] objects) {
+    public AddParameterAdapter(Context context, int resource, List<AddParameterModel> objects) {
         super(context, resource, objects);
         mContext = context;
-        mParameterModels = objects;
+        ParameterModels = (ArrayList<AddParameterModel>) objects;
+        mInflater = LayoutInflater.from(mContext);
     }
+
 
     @NonNull
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = ((Activity)mContext).getLayoutInflater();
-        convertView = inflater.inflate(R.layout.add_parameter_row, parent, false);
+        convertView = mInflater.inflate(R.layout.add_parameter_row, parent, false);
 
         //fill in info to Row
         TextView textViewname = (TextView)convertView.findViewById(R.id.row_parameter_name);
         TextView textViewsurname = (TextView)convertView.findViewById(R.id.row_parameter_surname);
         CheckBox checkBoxIsChecked = (CheckBox)convertView.findViewById(R.id.row_checkbox);
 
-        textViewname.setText(mParameterModels[position].name);
-        textViewsurname.setText(mParameterModels[position].surname);
-        checkBoxIsChecked.setChecked(mParameterModels[position].isChecked);
+        textViewname.setText(ParameterModels.get(position).name);
+        textViewsurname.setText(ParameterModels.get(position).surname);
+        checkBoxIsChecked.setChecked(ParameterModels.get(position).isChecked);
 
         checkBoxIsChecked.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 //Set models[postition].isChecked accordingly
-                mParameterModels[position].isChecked = isChecked;
+                ParameterModels.get(position).isChecked = isChecked; //Here
             }
         });
         return convertView;
