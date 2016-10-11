@@ -24,6 +24,8 @@ import java.util.zip.Inflater;
  * Created by Lars on 11-10-2016.
  */
 
+//ListView adapter with checkbox: http://techlovejump.com/android-listview-with-checkbox/
+
 public class AddParameterAdapter extends ArrayAdapter <AddParameterModel> {
 
     private Context mContext;
