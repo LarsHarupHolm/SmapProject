@@ -21,9 +21,9 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/parameter_list"
         android:name="com.smap16e.group02.isamonitor.ParameterListFragment"
-        android:layout_width="@dimen/item_width"
+        android:layout_width="0dp"
+        android:layout_weight="4"
         android:layout_height="match_parent"
-        android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"
         tools:context="com.smap16e.group02.isamonitor.ParameterListActivity"
@@ -33,6 +33,6 @@
         android:id="@+id/parameter_detail_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="3" />
+        android:layout_weight="6" />
 
 </LinearLayout>
