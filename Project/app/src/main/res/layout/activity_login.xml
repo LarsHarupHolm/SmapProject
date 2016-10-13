@@ -12,25 +12,31 @@
     android:orientation="vertical"
     android:weightSum="10"
     tools:context="com.smap16e.group02.isamonitor.login.LoginActivity">
-
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="4"
+    android:gravity="center_vertical">
     <ImageView
         android:id="@+id/login_logo"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="9"
-        android:layout_marginTop="30dp"
-        android:layout_gravity="center_horizontal"
+        android:layout_height="match_parent"
         app:srcCompat="@drawable/ic_isa_vector_red_nobackground_shadow"
         android:tint="#ff0000"
         android:contentDescription="@string/isa_logo" />
-
+</RelativeLayout>
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="6"
+android:gravity="center_vertical">
     <EditText
         android:id="@+id/login_email"
         android:inputType="textEmailAddress"
         android:maxLines="1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="5dp"
         android:hint="@string/e_mail"
         />
     <EditText
@@ -39,7 +45,8 @@
         android:maxLines="1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/password"/>
+        android:hint="@string/password"
+        android:layout_below="@id/login_email"/>
 
     <Button
         android:id="@+id/btn_logIn"
@@ -47,29 +54,33 @@
         android:layout_height="wrap_content"
         android:text="@string/log_in"
         android:layout_marginTop="10dp"
-        android:layout_gravity="center_horizontal"
         android:backgroundTint="@color/colorAccent"
-        android:textColor="@color/white"/>
+        android:textColor="@color/white"
+        android:layout_below="@id/login_password"
+        android:layout_centerHorizontal="true"
+/>
 
     <Button
         android:id="@+id/btn_logIn_signUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/register_description"
-        android:layout_gravity="center_horizontal"
+        android:layout_centerHorizontal="true"
         android:background="@null"
         android:textAllCaps="false"
         android:textColor="@color/colorAccentDark"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="-5dp"/>
+        android:layout_marginBottom="-5dp"
+        android:layout_below="@id/btn_logIn"/>
     <Button
         android:id="@+id/btn_lostPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/forgot_password"
-        android:layout_gravity="center_horizontal"
+        android:layout_centerHorizontal="true"
         android:background="@null"
         android:textAllCaps="false"
         android:textColor="@color/colorAccentDark"
-        android:layout_marginBottom="-20dp"/>
+        android:layout_marginBottom="-20dp"
+        android:layout_below="@id/btn_logIn_signUp"/>
+</RelativeLayout>
 </LinearLayout>
