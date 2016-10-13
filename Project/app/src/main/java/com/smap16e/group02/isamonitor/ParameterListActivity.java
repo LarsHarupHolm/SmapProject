@@ -23,10 +23,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Adapter;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.smap16e.group02.isamonitor.adaptors.SimpleItemRecyclerViewAdapter;
+import com.smap16e.group02.isamonitor.adaptors.RecyclerViewAdapter;
 import com.smap16e.group02.isamonitor.model.Measurement;
 import com.smap16e.group02.isamonitor.model.Parameter;
 import com.smap16e.group02.isamonitor.login.LoginActivity;
@@ -53,6 +53,7 @@ public class ParameterListActivity extends AppCompatActivity {
     private WebAPIHelper webAPIHelper;
     private Handler handler;
     private Timer timer;
+    private RecyclerViewAdapter recyclerViewAdapter;
 
     //region Service binding
     BackgroundService mService;
@@ -90,7 +91,10 @@ public class ParameterListActivity extends AppCompatActivity {
     //endregion
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(ParameterList.ITEMS, fragmentManager));
+        if(recyclerViewAdapter == null){
+            recyclerViewAdapter = new RecyclerViewAdapter(ParameterList.ITEMS, fragmentManager);
+            recyclerView.setAdapter(recyclerViewAdapter);
+        }
     }
 
     //region Overrides
@@ -204,6 +208,7 @@ public class ParameterListActivity extends AppCompatActivity {
                 }
                 ParameterList.setParameters(parameterList);
                 setupRecyclerView((RecyclerView) recyclerView);
+                recyclerViewAdapter.notifyDataSetChanged();
             } else {
                 // Error handling
             }
