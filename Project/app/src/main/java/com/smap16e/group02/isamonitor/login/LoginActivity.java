@@ -31,6 +31,8 @@ public class LoginActivity extends AppCompatActivity {
     private Button btnSignUp;
     private Button btnLostPassword;
 
+    private String mEmail;
+
     private FirebaseAuth mAuth;
 
     @Override
@@ -46,6 +48,17 @@ public class LoginActivity extends AppCompatActivity {
 
         //Firebase
         mAuth = FirebaseAuth.getInstance();
+
+        //Check if returning by log out
+        Bundle bundle = getIntent().getExtras();
+        if(bundle != null)
+        {
+           String email = bundle.getString(LoginActivity.EXTRA_EMAIL);
+            if(email != null)
+            {
+                ((EditText)findViewById(R.id.login_email)).setText(email);
+            }
+        }
     }
 
     @Override
