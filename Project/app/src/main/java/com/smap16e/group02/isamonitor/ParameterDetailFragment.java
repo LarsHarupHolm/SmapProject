@@ -24,6 +24,13 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.smap16e.group02.isamonitor.model.Measurement;
 import com.smap16e.group02.isamonitor.model.Parameter;
 import com.smap16e.group02.isamonitor.model.ParameterList;
@@ -37,6 +44,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -60,6 +69,9 @@ public class ParameterDetailFragment extends Fragment {
     private Timer timer;
     private TimerTask task;
     private WebAPIHelper webAPIHelper;
+    private LineChart chart;
+    private LineDataSet chartDataSet;
+    private LineData lineData;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -113,12 +125,26 @@ public class ParameterDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.parameter_detail, container, false);
 
-
         detailTextView = (TextView) rootView.findViewById(R.id.parameter_detail);
 
-        // Show the dummy content as text in a TextView.
+        // Chart setup
+        chart = (LineChart) rootView.findViewById(R.id.chart);
+        chart.setDescription(""); // No description
+        chart.getLegend().setEnabled(false);
+
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
+        YAxis yAxisRight = chart.getAxisRight();
+        yAxisRight.setEnabled(false);
+
+        chartDataSet = new LineDataSet(null, "Main data label");
+
+        lineData = new LineData(chartDataSet);
+        chart.setData(lineData);
+
         if (mItem != null) {
-            detailTextView.setText("Current value: ");
+            detailTextView.setText(R.string.current_value);
         }
 
         return rootView;
@@ -140,7 +166,8 @@ public class ParameterDetailFragment extends Fragment {
             if (result != null) {
                 Measurement measurement = webAPIHelper.buildMeasurement(result, parameterID);
                 if(measurement != null){
-                    detailTextView.setText(String.format("Current value: %.2f", measurement.value));
+                    detailTextView.setText(String.format("%s %.2f", getResources().getString(R.string.current_value), measurement.value));
+                    AddEntryToChart(measurement);
                 }
             } else {
                 if(getActivity() != null)
@@ -149,5 +176,17 @@ public class ParameterDetailFragment extends Fragment {
         }
     }
 
+    private void AddEntryToChart(Measurement measurement){
+        LineData data = chart.getData();
 
+        if (data != null) {
+            data.addDataSet(chartDataSet);
+
+            data.addEntry(new Entry(chartDataSet.getEntryCount(), (float)measurement.value,0),0);
+            data.notifyDataChanged();
+            chart.notifyDataSetChanged();
+            chart.setVisibleXRangeMaximum(120);
+            chart.moveViewToX(data.getEntryCount());
+        }
+    }
 }
