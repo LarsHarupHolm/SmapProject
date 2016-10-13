@@ -58,27 +58,16 @@ import static android.content.ContentValues.TAG;
  * on handsets.
  */
 public class ParameterDetailFragment extends Fragment {
-    /**
-     * The fragment argument representing the item ID that this fragment
-     * represents.
-     */
     public static final String ARG_ITEM_ID = "item_id";
     public Parameter mItem;
     private TextView detailTextView;
     private Handler handler;
     private Timer timer;
-    private TimerTask task;
     private WebAPIHelper webAPIHelper;
     private LineChart chart;
     private LineDataSet chartDataSet;
-    private LineData lineData;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
-    public ParameterDetailFragment() {
-    }
+    public ParameterDetailFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,9 +75,6 @@ public class ParameterDetailFragment extends Fragment {
         webAPIHelper = new WebAPIHelper();
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
             mItem = ParameterList.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
 
             Activity activity = this.getActivity();
@@ -100,7 +86,12 @@ public class ParameterDetailFragment extends Fragment {
 
         handler = new Handler();
         timer = new Timer();
-        task = new TimerTask() {
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        TimerTask task = new TimerTask() {
             @Override
             public void run() {
                 handler.post(new Runnable() {
@@ -116,7 +107,6 @@ public class ParameterDetailFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
         timer.cancel();
     }
 
@@ -140,7 +130,7 @@ public class ParameterDetailFragment extends Fragment {
 
         chartDataSet = new LineDataSet(null, "Main data label");
 
-        lineData = new LineData(chartDataSet);
+        LineData lineData = new LineData(chartDataSet);
         chart.setData(lineData);
 
         if (mItem != null) {

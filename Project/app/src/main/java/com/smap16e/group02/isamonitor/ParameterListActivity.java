@@ -103,8 +103,7 @@ public class ParameterListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parameter_list);
         webAPIHelper = new WebAPIHelper();
-
-        bindService();
+        handler = new Handler();
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(BackgroundService.BROADCAST_NEW_PARAMETERINFO);
@@ -114,7 +113,6 @@ public class ParameterListActivity extends AppCompatActivity {
         setSupportActionBar(myToolbar);
 
         fragmentManager = getSupportFragmentManager();
-
 
         recyclerView = findViewById(R.id.parameter_list);
         assert recyclerView != null;
@@ -138,20 +136,6 @@ public class ParameterListActivity extends AppCompatActivity {
                 startActivityForResult(i, ADD_PARAMETER);
             }
         });
-
-        handler = new Handler();
-        timer = new Timer();
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(new Runnable() {
-                    public void run() {
-                        new UpdateReadings().execute();
-                    }
-                });
-            }
-        };
-        timer.schedule(task, 0, 1000*20); //Every 20 seconds
     }
 
     private BroadcastReceiver onServiceResult = new BroadcastReceiver() {
@@ -168,8 +152,26 @@ public class ParameterListActivity extends AppCompatActivity {
     };
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStart() {
+        super.onStart();
+        bindService();
+        timer = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        new UpdateReadings().execute();
+                    }
+                });
+            }
+        };
+        timer.schedule(task, 0, 1000*20); //Every 20 seconds
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
         unbindService();
         timer.cancel();
     }

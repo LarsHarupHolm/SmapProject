@@ -75,7 +75,6 @@ public class AddParameter extends AppCompatActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_parameter);
 
-        bindService();
         IntentFilter filter = new IntentFilter();
         filter.addAction(BackgroundService.BROADCAST_NEW_PARAMETERINFO);
         LocalBroadcastManager.getInstance(this).registerReceiver(onServiceResult, filter);
@@ -103,8 +102,6 @@ public class AddParameter extends AppCompatActivity implements AdapterView.OnIte
                 finish();
             }
         });
-        //spinner = (Spinner) findViewById(R.id.spinner);
-        //spinner.setOnItemSelectedListener(this);
 
         if(mService != null && mService.generalParameterList != null && mService.subscribedParameterList != null)
             populateList();
@@ -118,8 +115,14 @@ public class AddParameter extends AppCompatActivity implements AdapterView.OnIte
     };
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStart() {
+        super.onStart();
+        bindService();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
         unbindService();
     }
 

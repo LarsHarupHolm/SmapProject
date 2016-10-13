@@ -55,8 +55,7 @@ public class BackgroundService extends Service {
     //endregion
 
     //region Constructor and overrides
-    public BackgroundService() {
-    }
+    public BackgroundService() {}
 
     public class LocalBinder extends Binder {
         BackgroundService getService() {
