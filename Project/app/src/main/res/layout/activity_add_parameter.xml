@@ -10,14 +10,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.smap16e.group02.isamonitor.AddParameter">
 
-    <TextView
-        android:text="@string/parameters"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/add_parameter_header" />
-
     <Button
         android:text="@android:string/cancel"
         android:layout_width="wrap_content"
@@ -40,7 +32,6 @@
         android:id="@+id/add_parameter_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/add_parameter_header"
         android:layout_above="@id/okButton"
         />
 </RelativeLayout>
