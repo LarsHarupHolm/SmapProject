@@ -2,41 +2,33 @@ package com.smap16e.group02.isamonitor.adaptors;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.smap16e.group02.isamonitor.ParameterDetailActivity;
 import com.smap16e.group02.isamonitor.ParameterDetailFragment;
 import com.smap16e.group02.isamonitor.ParameterListActivity;
 import com.smap16e.group02.isamonitor.R;
-import com.smap16e.group02.isamonitor.WebAPIHelper;
-import com.smap16e.group02.isamonitor.model.Measurement;
 import com.smap16e.group02.isamonitor.model.Parameter;
 
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by KSJensen on 1/10/2016.
  * Based on the official Master/Detail template.
  */
 
-public class SimpleItemRecyclerViewAdapter
-        extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
+public class RecyclerViewAdapter
+        extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     private final List<Parameter> mValues;
     private FragmentManager fragmentManager;
 
-    public SimpleItemRecyclerViewAdapter(List<Parameter> items, FragmentManager fragmentManager) {
+    public RecyclerViewAdapter(List<Parameter> items, FragmentManager fragmentManager) {
         mValues = items;
         this.fragmentManager = fragmentManager;
     }
