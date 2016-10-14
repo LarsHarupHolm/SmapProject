@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,16 +75,6 @@ public class ParameterDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         webAPIHelper = new WebAPIHelper();
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
-            mItem = ParameterList.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
-
-            Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-            if (appBarLayout != null) {
-                appBarLayout.setTitle(mItem.name);
-            }
-        }
-
         handler = new Handler();
         timer = new Timer();
     }
@@ -91,6 +82,18 @@ public class ParameterDetailFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
+        if (getArguments().containsKey(ARG_ITEM_ID)) {
+            mItem = ParameterList.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+
+            Activity activity = this.getActivity();
+            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+
+            if (appBarLayout != null) {
+                appBarLayout.setTitle(mItem.name);
+            }
+        }
+
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
