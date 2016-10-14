@@ -105,8 +105,8 @@ public class ParameterDetailFragment extends Fragment {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onStop() {
+        super.onStop();
         timer.cancel();
     }
 

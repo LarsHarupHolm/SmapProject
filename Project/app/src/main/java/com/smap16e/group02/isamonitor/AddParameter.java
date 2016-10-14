@@ -9,17 +9,13 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.widget.ListViewAutoScrollHelper;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Spinner;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.smap16e.group02.isamonitor.adaptors.AddParameterAdapter;
 import com.smap16e.group02.isamonitor.model.AddParameterModel;
 import com.smap16e.group02.isamonitor.model.Parameter;

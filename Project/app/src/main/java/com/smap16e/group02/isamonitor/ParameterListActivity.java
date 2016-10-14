@@ -110,8 +110,8 @@ public class ParameterListActivity extends AppCompatActivity {
         filter.addAction(BackgroundService.BROADCAST_NEW_PARAMETERINFO);
         LocalBroadcastManager.getInstance(this).registerReceiver(onServiceResult, filter);
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
 
         fragmentManager = getSupportFragmentManager();
 
@@ -121,13 +121,8 @@ public class ParameterListActivity extends AppCompatActivity {
             setupRecyclerView((RecyclerView) recyclerView);
         }
 
-        if (findViewById(R.id.parameter_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
-            modeTwoPane = true;
-        }
+        // If the parameter_detail_container exists then we are in two pane mode.
+        modeTwoPane = findViewById(R.id.parameter_detail_container) != null;
 
         FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.floatingActionButton);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
