@@ -12,10 +12,11 @@
     tools:context="com.smap16e.group02.isamonitor.login.LoginActivity">
     <ImageView
         android:id="@+id/login_logo"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/logo_big"
         android:layout_height="match_parent"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="40dp"
         app:srcCompat="@drawable/ic_isa_vector_red_nobackground_shadow"
         android:tint="#ff0000"
         android:contentDescription="@string/isa_logo"
@@ -27,7 +28,7 @@
         android:maxLines="1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:hint="@string/e_mail"
         android:layout_above="@id/login_password"
         />
@@ -37,6 +38,7 @@
         android:maxLines="1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:hint="@string/password"
         android:layout_above="@id/btn_logIn"/>
 
@@ -45,7 +47,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/log_in"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="10dp"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_centerHorizontal="true"
         android:layout_above="@id/btn_logIn_signUp"

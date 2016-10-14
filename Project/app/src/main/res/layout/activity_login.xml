@@ -54,8 +54,7 @@ android:gravity="center_vertical">
         android:layout_height="wrap_content"
         android:text="@string/log_in"
         android:layout_marginTop="10dp"
-        android:backgroundTint="@color/colorAccent"
-        android:textColor="@color/white"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_below="@id/login_password"
         android:layout_centerHorizontal="true"
 />
