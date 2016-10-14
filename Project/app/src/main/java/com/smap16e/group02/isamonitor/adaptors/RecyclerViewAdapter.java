@@ -1,5 +1,6 @@
 package com.smap16e.group02.isamonitor.adaptors;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
