@@ -47,6 +47,7 @@ public class ParameterListActivity extends AppCompatActivity {
     static final String RESULT_ID = "result id";
     static final int ADD_PARAMETER = 0;
     public static boolean modeTwoPane;
+
     private FragmentManager fragmentManager;
     private static final String TAG = "ParameterListActivity";
     private View recyclerView;
