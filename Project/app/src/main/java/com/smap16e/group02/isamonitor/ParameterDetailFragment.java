@@ -155,10 +155,9 @@ public class ParameterDetailFragment extends Fragment {
 
             if (result != null) {
                 Measurement measurement = webAPIHelper.buildMeasurement(result, parameterID);
-                if(measurement != null){
-                    detailTextView.setText(String.format("%s %.2f", getResources().getString(R.string.current_value), measurement.value));
-                    AddEntryToChart(measurement);
-                }
+                mItem.reading = measurement.value;
+                detailTextView.setText(String.format("%s %s", getResources().getString(R.string.current_value), mItem.readingToString()));
+                AddEntryToChart(measurement);
             } else {
                 if(getActivity() != null)
                     Toast.makeText(getActivity(), "No connection to server", Toast.LENGTH_SHORT).show();
