@@ -69,6 +69,7 @@ public class WebAPIHelper {
                     Log.e(TAG, "No connection to server");
             }
         } catch (IOException e) {
+            //java.net.ConnectException == Not connected to VPN
             e.printStackTrace();
             return null;
         }

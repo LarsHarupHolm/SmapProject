@@ -8,11 +8,11 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PersistableBundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
@@ -22,13 +22,14 @@ import com.smap16e.group02.isamonitor.model.Parameter;
 
 import java.util.ArrayList;
 
-public class AddParameter extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class AddParameter extends AppCompatActivity {
     private String TAG = "AddParameterActivity";
     private long selectedParameter = -1;
     private ArrayList<AddParameterModel> addParameterModelArrayList;
     private AddParameterAdapter mAdapter;
 
     private ListView mListView;
+
     //region Service binding
     BackgroundService mService;
     boolean mBound = false;
@@ -122,6 +123,13 @@ public class AddParameter extends AppCompatActivity implements AdapterView.OnIte
         unbindService();
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+
+
+    }
+
     private void populateList() {
         //Get all parameters
         Log.d(TAG, "populateList");
@@ -151,15 +159,5 @@ public class AddParameter extends AppCompatActivity implements AdapterView.OnIte
             }
         }
         mService.addParameterListSubscription(parameterIds);
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        selectedParameter = id;
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-        //Wat
     }
 }
