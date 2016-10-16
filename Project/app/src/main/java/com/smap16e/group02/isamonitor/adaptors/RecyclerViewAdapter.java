@@ -45,10 +45,7 @@ public class RecyclerViewAdapter
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
         holder.mIdView.setText(mValues.get(position).name);
-        if(mValues.get(position).reading == null)
-            holder.mContentView.setText(mValues.get(position).unit);
-        else
-            holder.mContentView.setText(String.format("%.2f %s", mValues.get(position).reading, mValues.get(position).unit));
+        holder.mContentView.setText(mValues.get(position).readingToString());
 
         // When user clicks on item in list
         holder.mView.setOnClickListener(new View.OnClickListener() {

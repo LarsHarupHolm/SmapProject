@@ -9,8 +9,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -86,12 +88,7 @@ public class ParameterDetailFragment extends Fragment {
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             mItem = ParameterList.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
 
-            Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-
-            if (appBarLayout != null) {
-                appBarLayout.setTitle(mItem.name);
-            }
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(mItem.name);
         }
 
         TimerTask task = new TimerTask() {
@@ -158,10 +155,9 @@ public class ParameterDetailFragment extends Fragment {
 
             if (result != null) {
                 Measurement measurement = webAPIHelper.buildMeasurement(result, parameterID);
-                if(measurement != null){
-                    detailTextView.setText(String.format("%s %.2f", getResources().getString(R.string.current_value), measurement.value));
-                    AddEntryToChart(measurement);
-                }
+                mItem.reading = measurement.value;
+                detailTextView.setText(String.format("%s %s", getResources().getString(R.string.current_value), mItem.readingToString()));
+                AddEntryToChart(measurement);
             } else {
                 if(getActivity() != null)
                     Toast.makeText(getActivity(), "No connection to server", Toast.LENGTH_SHORT).show();

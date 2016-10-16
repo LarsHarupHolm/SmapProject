@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Color;
+import android.icu.util.Measure;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -202,7 +203,11 @@ public class ParameterListActivity extends AppCompatActivity {
             if (result != null && mService != null && mService.subscribedParameterList != null) {
                 List<Parameter> parameterList = mService.subscribedParameterList;
                 for (Parameter parameter : parameterList) {
-                    parameter.reading = result.get(parameter.id - 1).value;
+                    for (Measurement m : result) {
+                        if (parameter.id == m.id) {
+                            parameter.reading = m.value;
+                        }
+                    }
                 }
                 ParameterList.setParameters(parameterList);
                 recyclerViewAdapter.notifyDataSetChanged();

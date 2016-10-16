@@ -1,6 +1,7 @@
 package com.smap16e.group02.isamonitor.model;
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.text.DecimalFormat;
 import java.util.Objects;
 
 /**
@@ -14,10 +15,24 @@ public class Parameter {
     public String surname;
     public String unit;
     public Double reading;
+    public String format;
 
     @Override
     public String toString() {
         return name;
+    }
+
+    public String readingToString() {
+        if (reading == null) return "";
+        switch (format) {
+            case "in/out":
+                return (reading.intValue() == 1 ? "In" : "Out");
+            case "open/close":
+                return (reading.intValue() == 1 ? "Open" : "Close");
+            default:
+                DecimalFormat decimalFormat = new DecimalFormat(format);
+                return decimalFormat.format(reading) + (unit != "" ? " " + unit : "");
+        }
     }
 
     @Override
@@ -33,7 +48,6 @@ public class Parameter {
             return false;
         return unit != null ? unit.equals(parameter.unit) : parameter.unit == null;
     }
-
     @Override
     public int hashCode() {
         int result = id;

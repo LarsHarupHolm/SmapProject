@@ -8,7 +8,7 @@ package com.smap16e.group02.isamonitor.model;
 
 public class Measurement {
     public int id;
-    public int parameterId;
     public double value;
     public long measureTime;
+    public Boolean isValid;
 }

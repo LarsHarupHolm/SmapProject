@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -29,20 +30,20 @@ import static android.content.ContentValues.TAG;
 public class WebAPIHelper {
 
     public String getParameterMeasurement(int parameterID){
-        return makeHTTPRequest(BackgroundService.APIurl+parameterID, 50);
+        return makeHTTPRequest(BackgroundService.APIurl+parameterID, 100);
     }
 
     public List<Measurement> getParameterMeasurements(){
-        String requestResult = makeHTTPRequest(BackgroundService.APIurl, 1000);
+        String requestResult = makeHTTPRequest(BackgroundService.APIurl, 2000);
         if(requestResult != null)
             return buildMeasurements(requestResult);
         else
             return null;
     }
 
-
+    //Inspiration from http://stackoverflow.com/questions/21170893/httpurlconnection-cutting-inputstream-returned
     private String makeHTTPRequest(String urlString, int bufferLength){
-        String result = null;
+        StringBuilder result = new StringBuilder();
         InputStream inputStream;
 
         try {
@@ -59,9 +60,11 @@ public class WebAPIHelper {
                 case 200:
                     inputStream = urlConnection.getInputStream();
                     Reader reader = new InputStreamReader(inputStream, "UTF-8");
-                    char[] buffer = new char[bufferLength];
-                    reader.read(buffer);
-                    result = new String(buffer);
+                    BufferedReader bufferedReader = new BufferedReader(reader);
+                    String output;
+                    while ((output = bufferedReader.readLine()) != null) {
+                        result.append(output);
+                    }
                     inputStream.close();
                     urlConnection.disconnect();
                     break;
@@ -74,7 +77,7 @@ public class WebAPIHelper {
             return null;
         }
 
-        return result;
+        return result.toString();
     }
 
     public Measurement buildMeasurement(String jsonString, int parameterID){
@@ -82,8 +85,9 @@ public class WebAPIHelper {
         try {
             JSONObject jsonObject = new JSONObject(jsonString);
             result.id = parameterID;
-            result.value = jsonObject.getDouble("v");
-            result.measureTime =  jsonObject.getLong("m");
+            result.value = jsonObject.getDouble("value");
+            result.measureTime =  jsonObject.getLong("timestamp");
+            result.isValid = jsonObject.getBoolean("isValid");
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
@@ -98,9 +102,10 @@ public class WebAPIHelper {
             for(int i = 0; i < jsonArray.length(); i++){
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 Measurement measurement = new Measurement();
-                measurement.id = i+1;
-                measurement.value = jsonObject.getDouble("v");
-                measurement.measureTime =  jsonObject.getLong("m");
+                measurement.id = jsonObject.getInt("parameterId");
+                measurement.value = jsonObject.getDouble("value");
+                measurement.measureTime =  jsonObject.getLong("timestamp");
+                measurement.isValid = jsonObject.getBoolean("isValid");
                 result.add(measurement);
             }
             return result;
