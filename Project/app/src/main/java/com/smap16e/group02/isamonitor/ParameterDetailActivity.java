@@ -15,8 +15,6 @@ import android.view.MenuItem;
  */
 public class ParameterDetailActivity extends AppCompatActivity {
 
-    private ParameterDetailFragment fragment;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +44,7 @@ public class ParameterDetailActivity extends AppCompatActivity {
             Bundle arguments = new Bundle();
             arguments.putString(ParameterDetailFragment.ARG_ITEM_ID,
                     getIntent().getStringExtra(ParameterDetailFragment.ARG_ITEM_ID));
-            fragment = new ParameterDetailFragment();
+            ParameterDetailFragment fragment = new ParameterDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.parameter_detail_container, fragment)

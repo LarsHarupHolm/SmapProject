@@ -211,7 +211,6 @@ public class ParameterListActivity extends AppCompatActivity {
                     }
                 }
                 ParameterList.setParameters(parameterList);
-                setupRecyclerView((RecyclerView) recyclerView);
                 recyclerViewAdapter.notifyDataSetChanged();
             } else {
                 // Error handling
