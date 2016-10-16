@@ -16,6 +16,7 @@ public class Parameter {
     public String unit;
     public Double reading;
     public String format;
+    public Boolean isValid;
 
     @Override
     public String toString() {
@@ -23,7 +24,7 @@ public class Parameter {
     }
 
     public String readingToString() {
-        if (reading == null) return "";
+        if (reading == null || format == null) return "";
         switch (format) {
             case "in/out":
                 return (reading.intValue() == 1 ? "In" : "Out");

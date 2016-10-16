@@ -12,12 +12,14 @@ import android.os.IBinder;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,6 +66,7 @@ public class ParameterDetailFragment extends Fragment {
     public static final String ARG_ITEM_ID = "item_id";
     public Parameter mItem;
     private TextView detailTextView;
+    private ImageView isValidIndicator;
     private Handler handler;
     private Timer timer;
     private WebAPIHelper webAPIHelper;
@@ -116,6 +119,7 @@ public class ParameterDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.parameter_detail, container, false);
 
         detailTextView = (TextView) rootView.findViewById(R.id.parameter_detail);
+        isValidIndicator = (ImageView) rootView.findViewById(R.id.statusIcon);
 
         // Chart setup
         chart = (LineChart) rootView.findViewById(R.id.chart);
@@ -135,6 +139,7 @@ public class ParameterDetailFragment extends Fragment {
 
         if (mItem != null) {
             detailTextView.setText(R.string.current_value);
+            isValidIndicator.setColorFilter(ContextCompat.getColor(this.getContext(), R.color.redA700));
         }
 
         return rootView;
@@ -157,6 +162,7 @@ public class ParameterDetailFragment extends Fragment {
                 Measurement measurement = webAPIHelper.buildMeasurement(result, parameterID);
                 mItem.reading = measurement.value;
                 detailTextView.setText(String.format("%s %s", getResources().getString(R.string.current_value), mItem.readingToString()));
+                isValidIndicator.setColorFilter(ContextCompat.getColor(getContext(), mItem.isValid ? R.color.greenA700 : R.color.redA700));
                 AddEntryToChart(measurement);
             } else {
                 if(getActivity() != null)
