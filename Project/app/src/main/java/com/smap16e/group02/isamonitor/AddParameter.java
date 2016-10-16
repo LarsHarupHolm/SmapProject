@@ -8,10 +8,8 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.PersistableBundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -24,9 +22,11 @@ import java.util.ArrayList;
 
 public class AddParameter extends AppCompatActivity {
     private String TAG = "AddParameterActivity";
+    private final String bundle_ObjectArray = "add parametermodel array";
     private long selectedParameter = -1;
     private ArrayList<AddParameterModel> addParameterModelArrayList;
     private AddParameterAdapter mAdapter;
+    private Boolean isLoadedFromSavedInstance = false;
 
     private ListView mListView;
 
@@ -100,6 +100,16 @@ public class AddParameter extends AppCompatActivity {
             }
         });
 
+        if(savedInstanceState != null){
+            if(mListView != null) {
+                isLoadedFromSavedInstance = true;
+                ArrayList<AddParameterModel> parameterModelArrayList = savedInstanceState.getParcelableArrayList(bundle_ObjectArray);
+                mAdapter = new AddParameterAdapter(AddParameter.this, android.R.layout.list_content, parameterModelArrayList);
+                mListView.setAdapter(mAdapter);
+                return;
+            }
+        }
+
         if(mService != null && mService.generalParameterList != null && mService.subscribedParameterList != null)
             populateList();
     }
@@ -107,6 +117,9 @@ public class AddParameter extends AppCompatActivity {
     private BroadcastReceiver onServiceResult = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if(isLoadedFromSavedInstance)
+                return;
+
             populateList();
         }
     };
@@ -124,15 +137,13 @@ public class AddParameter extends AppCompatActivity {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        super.onSaveInstanceState(outState, outPersistentState);
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putParcelableArrayList(bundle_ObjectArray, mAdapter.getParameterModels());
 
-
+        super.onSaveInstanceState(savedInstanceState);
     }
 
     private void populateList() {
-        //Get all parameters
-        Log.d(TAG, "populateList");
         //Get id's of subscribed to
         addParameterModelArrayList = new ArrayList<>();
         for (Parameter parameter : mService.generalParameterList)

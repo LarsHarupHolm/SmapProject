@@ -33,6 +33,10 @@ public class AddParameterAdapter extends ArrayAdapter <AddParameterModel> {
         mInflater = LayoutInflater.from(context);
     }
 
+    public ArrayList<AddParameterModel> getParameterModels(){
+        return ParameterModels;
+    }
+
     @NonNull
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
