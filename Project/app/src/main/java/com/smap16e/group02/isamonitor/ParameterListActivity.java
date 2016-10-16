@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.graphics.Color;
-import android.icu.util.Measure;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,13 +22,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Adapter;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.smap16e.group02.isamonitor.adaptors.RecyclerViewAdapter;
+import com.smap16e.group02.isamonitor.login.LoginActivity;
 import com.smap16e.group02.isamonitor.model.Measurement;
 import com.smap16e.group02.isamonitor.model.Parameter;
-import com.smap16e.group02.isamonitor.login.LoginActivity;
 import com.smap16e.group02.isamonitor.model.ParameterList;
 
 import java.util.List;

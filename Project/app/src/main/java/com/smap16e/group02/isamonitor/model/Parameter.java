@@ -1,8 +1,8 @@
 package com.smap16e.group02.isamonitor.model;
+
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.text.DecimalFormat;
-import java.util.Objects;
 
 /**
  * Created by KSJensen on 30/09/2016.

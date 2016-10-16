@@ -24,7 +24,6 @@ public class AddParameter extends AppCompatActivity {
     private String TAG = "AddParameterActivity";
     private final String bundle_ObjectArray = "add parametermodel array";
     private long selectedParameter = -1;
-    private ArrayList<AddParameterModel> addParameterModelArrayList;
     private AddParameterAdapter mAdapter;
     private Boolean isLoadedFromSavedInstance = false;
 
@@ -145,7 +144,7 @@ public class AddParameter extends AppCompatActivity {
 
     private void populateList() {
         //Get id's of subscribed to
-        addParameterModelArrayList = new ArrayList<>();
+        ArrayList<AddParameterModel> addParameterModelArrayList = new ArrayList<>();
         for (Parameter parameter : mService.generalParameterList)
         {
             boolean isSubscribed = mService.subscribedParameterList.contains(parameter);

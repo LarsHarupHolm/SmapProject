@@ -19,7 +19,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.smap16e.group02.isamonitor.model.Parameter;
 import com.smap16e.group02.isamonitor.model.User;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
