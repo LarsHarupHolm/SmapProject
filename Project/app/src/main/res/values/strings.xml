@@ -19,5 +19,6 @@
     <string name="current_value">"Current value: "</string>
     <string name="register_new_account">Register new account</string>
     <string name="data_is_valid">Data is valid</string>
+    <string name="data_is_invalid">Data is invalid</string>
     <string name="ErrorMessageNotConnected">Not connected to VPN</string>
 </resources>

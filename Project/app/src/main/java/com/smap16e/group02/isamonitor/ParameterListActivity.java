@@ -203,6 +203,7 @@ public class ParameterListActivity extends AppCompatActivity {
                     for (Measurement m : result) {
                         if (parameter.id == m.id) {
                             parameter.reading = m.value;
+                            parameter.isValid = m.isValid;
                         }
                     }
                 }

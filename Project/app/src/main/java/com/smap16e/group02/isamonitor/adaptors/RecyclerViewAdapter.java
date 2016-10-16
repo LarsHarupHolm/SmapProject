@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.smap16e.group02.isamonitor.ParameterDetailActivity;
@@ -27,6 +29,7 @@ public class RecyclerViewAdapter
         extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     private final List<Parameter> mValues;
     private FragmentManager fragmentManager;
+    private Context context;
 
     public RecyclerViewAdapter(List<Parameter> items, FragmentManager fragmentManager) {
         mValues = items;
@@ -37,6 +40,7 @@ public class RecyclerViewAdapter
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.parameter_list_content, parent, false);
+        context = parent.getContext();
         return new ViewHolder(view);
     }
 
@@ -45,7 +49,7 @@ public class RecyclerViewAdapter
         holder.mItem = mValues.get(position);
         holder.mIdView.setText(mValues.get(position).name);
         holder.mContentView.setText(mValues.get(position).readingToString());
-
+        holder.mIsValidView.setColorFilter(ContextCompat.getColor(context, holder.mItem.isValid ? R.color.greenA700 : R.color.redA700));
         // When user clicks on item in list
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,6 +83,7 @@ public class RecyclerViewAdapter
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
+        public final ImageView mIsValidView;
         public Parameter mItem;
 
         public ViewHolder(View view) {
@@ -86,6 +91,7 @@ public class RecyclerViewAdapter
             mView = view;
             mIdView = (TextView) view.findViewById(R.id.id);
             mContentView = (TextView) view.findViewById(R.id.content);
+            mIsValidView = (ImageView) view.findViewById(R.id.statusIcon);
         }
 
         @Override
