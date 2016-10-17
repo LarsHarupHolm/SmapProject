@@ -16,10 +16,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.smap16e.group02.isamonitor.model.ParameterList;
-
-import static android.R.attr.filter;
-
 /**
  * An activity representing a single Parameter detail screen. This
  * activity is only used narrow width devices. On tablet-size devices,

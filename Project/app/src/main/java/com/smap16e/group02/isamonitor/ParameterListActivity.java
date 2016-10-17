@@ -138,7 +138,7 @@ public class ParameterListActivity extends AppCompatActivity {
     private BroadcastReceiver onServiceResult = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(mService.subscribedParameterList == null)
+            if(mService == null || mService.subscribedParameterList == null)
                 return;
             setupRecyclerView((RecyclerView) recyclerView);
         }
@@ -147,7 +147,7 @@ public class ParameterListActivity extends AppCompatActivity {
     private BroadcastReceiver onNewMeasurementResult = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(mService.subscribedParameterList == null)
+            if(mService == null || mService.subscribedParameterList == null)
                 return;
             recyclerViewAdapter.notifyDataSetChanged();
             ParameterDetailFragment fragment = (ParameterDetailFragment)getSupportFragmentManager().findFragmentById(R.id.parameter_detail_container);
