@@ -21,4 +21,18 @@
     <string name="data_is_valid">Data is valid</string>
     <string name="data_is_invalid">Data is invalid</string>
     <string name="ErrorMessageNotConnected">Connection error, check VPN and internet connection</string>
+    <string name="enter_email">Please enter your email</string>
+    <string name="enter_password">Please enter your password</string>
+    <string name="verify_account">Please verify your account before logging in</string>
+    <string name="username_pw_incorrect">Username or password incorrect</string>
+    <string name="user_reauthenticated">User is reauthenticated</string>
+    <string name="verification_mail_sent">Verification email has been sent. Please verify your account</string>
+    <string name="error_contact_support">Something went wrong, please contact support</string>
+    <string name="verification_email_sent_to">"Verification Email sent to "</string>
+    <string name="authentication_failed">Authentication failed.</string>
+    <string name="passwords_must_match">Passwords must match!</string>
+    <string name="password_must_be">"Password must be "</string>
+    <string name="characters_long">" characters long!"</string>
+    <string name="no_users_exist">No user exists with that email</string>
+    <string name="email_has_been_sent">Email has been sent.</string>
 </resources>

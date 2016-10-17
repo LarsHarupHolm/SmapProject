@@ -52,7 +52,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
                 final String email = ((EditText)findViewById(R.id.res_pw_email)).getText().toString();
 
                 if(email.isEmpty() || !email.contains("@")) {
-                    Toast.makeText(ResetPasswordActivity.this, "Please enter your email", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ResetPasswordActivity.this, R.string.enter_email, Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -61,7 +61,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful()) {
-                            Toast.makeText(ResetPasswordActivity.this, "Email has been sent.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(ResetPasswordActivity.this, R.string.email_has_been_sent, Toast.LENGTH_LONG).show();
                             //Go back to Login
                             Intent returnIntent = new Intent();
                             returnIntent.putExtra(LoginActivity.EXTRA_EMAIL, email);
@@ -72,7 +72,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
                                 throw task.getException();
                             } catch (FirebaseAuthInvalidUserException invUserEx) {
                                 //No user with email exists
-                                Toast.makeText(ResetPasswordActivity.this, "No user exists with that email", Toast.LENGTH_LONG).show();
+                                Toast.makeText(ResetPasswordActivity.this, R.string.no_users_exist, Toast.LENGTH_LONG).show();
                             } catch (Exception e) {
                                 Log.d(TAG, e.getMessage());
                             }

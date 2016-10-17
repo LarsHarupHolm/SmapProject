@@ -63,17 +63,17 @@ public class SignupActivity extends AppCompatActivity {
                 //Check if email syntax
                 //check if passwords match
                 if(email.isEmpty() || !email.contains("@")) {
-                    Toast.makeText(SignupActivity.this, "Please enter your email", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignupActivity.this, getString(R.string.enter_email), Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if(!Objects.equals(password, ((EditText) findViewById(R.id.signUp_rePassword)).getText().toString()))
                 {
-                    Toast.makeText(SignupActivity.this, "Passwords must match!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignupActivity.this, R.string.passwords_must_match, Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 if(password.length() < MIN_PASSWORD_LENGTH) {
-                    Toast.makeText(SignupActivity.this, "Password must be "+MIN_PASSWORD_LENGTH + " characters long!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignupActivity.this, getString(R.string.password_must_be)+MIN_PASSWORD_LENGTH + getString(R.string.characters_long), Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -92,7 +92,7 @@ public class SignupActivity extends AppCompatActivity {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if(task.isSuccessful()){
-                                            Log.d(TAG, "User is reauthenticated");
+                                            Log.d(TAG, getString(R.string.user_reauthenticated));
                                         } else {
                                             try{
                                                 throw task.getException();
@@ -107,16 +107,15 @@ public class SignupActivity extends AppCompatActivity {
                                 map.put("email", user.getEmail());
                                 mDatabase.child("users").child(user.getUid()).setValue(map);
                                 //Send verification Email
-                                /***** todo:not sending email - fix later **/
                                  user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if(task.isSuccessful()) {
-                                            Log.d(TAG, "Verification Email sent to " + email);
-                                            Toast.makeText(SignupActivity.this, "Verification email has been sent. Please verify your account", Toast.LENGTH_LONG).show();
+                                            Log.d(TAG, getString(R.string.verification_email_sent_to) + email);
+                                            Toast.makeText(SignupActivity.this, R.string.verification_mail_sent, Toast.LENGTH_LONG).show();
                                         } else {
                                             Toast.makeText(SignupActivity.this, " " + task.getException(), Toast.LENGTH_LONG).show();
-                                            Toast.makeText(SignupActivity.this, "Something went wrong, please contact support", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(SignupActivity.this, R.string.error_contact_support, Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 });
@@ -131,7 +130,7 @@ public class SignupActivity extends AppCompatActivity {
                                 try{
                                     throw task.getException();
                                 } catch (Exception e) {
-                                    Toast.makeText(SignupActivity.this, "Authentication failed." + e.getMessage(),
+                                    Toast.makeText(SignupActivity.this, getString(R.string.authentication_failed) + e.getMessage(),
                                             Toast.LENGTH_LONG).show();
                                     Log.d(TAG, e.getMessage());
                                 }

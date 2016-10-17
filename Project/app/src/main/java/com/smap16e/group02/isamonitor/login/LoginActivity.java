@@ -90,13 +90,12 @@ public class LoginActivity extends AppCompatActivity {
                 String email = ((EditText)findViewById(R.id.login_email)).getText().toString();
                 String password = ((EditText)findViewById(R.id.login_password)).getText().toString();
 
-                //Todo:Extract string resources
                 if(email.isEmpty() || !email.contains("@")) {
-                    Toast.makeText(LoginActivity.this, "Please enter your email", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, R.string.enter_email, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if(password.isEmpty()) {
-                    Toast.makeText(LoginActivity.this, "Please enter your password", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, R.string.enter_password, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
@@ -112,10 +111,10 @@ public class LoginActivity extends AppCompatActivity {
                                 startActivity(loginFinishedIntent);
                                 finish(); //finish so User cannot re-enter login screen
                             } else {
-                                Toast.makeText(LoginActivity.this, "Please verify your account before logging in", Toast.LENGTH_LONG).show();
+                                Toast.makeText(LoginActivity.this, R.string.verify_account, Toast.LENGTH_LONG).show();
                             }
                         } else {
-                            Toast.makeText(LoginActivity.this, "Username or password incorrect", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, R.string.username_pw_incorrect, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
