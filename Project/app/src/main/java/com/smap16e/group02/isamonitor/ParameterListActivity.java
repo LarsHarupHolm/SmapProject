@@ -6,9 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -26,13 +24,7 @@ import android.view.View;
 import com.google.firebase.auth.FirebaseAuth;
 import com.smap16e.group02.isamonitor.adaptors.RecyclerViewAdapter;
 import com.smap16e.group02.isamonitor.login.LoginActivity;
-import com.smap16e.group02.isamonitor.model.Measurement;
-import com.smap16e.group02.isamonitor.model.Parameter;
 import com.smap16e.group02.isamonitor.model.ParameterList;
-
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * References:
@@ -49,10 +41,8 @@ public class ParameterListActivity extends AppCompatActivity {
     private FragmentManager fragmentManager;
     private static final String TAG = "ParameterListActivity";
     private View recyclerView;
-    private WebAPIHelper webAPIHelper;
-    private Handler handler;
-    private Timer timer;
     private RecyclerViewAdapter recyclerViewAdapter;
+    private ParameterDetailFragment parameterDetailFragment;
 
     //region Service binding
     BackgroundService mService;
@@ -65,6 +55,11 @@ public class ParameterListActivity extends AppCompatActivity {
             Log.e(TAG, "onServiceConnected called...");
 
             mService = ((BackgroundService.LocalBinder) service).getService();
+
+            if (mService.subscribedParameterList != null) {
+                ParameterList.setParameters(mService.subscribedParameterList);
+                recyclerViewAdapter.notifyDataSetChanged();
+            }
         }
 
         @Override
@@ -101,12 +96,14 @@ public class ParameterListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parameter_list);
-        webAPIHelper = new WebAPIHelper();
-        handler = new Handler();
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(BackgroundService.BROADCAST_NEW_PARAMETERINFO);
         LocalBroadcastManager.getInstance(this).registerReceiver(onServiceResult, filter);
+
+        filter = new IntentFilter();
+        filter.addAction(BackgroundService.BROADCAST_NEW_MEASUREMENT);
+        LocalBroadcastManager.getInstance(this).registerReceiver(onNewMeasurementResult, filter);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
@@ -121,6 +118,7 @@ public class ParameterListActivity extends AppCompatActivity {
 
         // If the parameter_detail_container exists then we are in two pane mode.
         modeTwoPane = findViewById(R.id.parameter_detail_container) != null;
+        //Get the ParameterDetailFragment if we are in modeTwoPane
 
         FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.floatingActionButton);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -137,11 +135,20 @@ public class ParameterListActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             if(mService.subscribedParameterList == null)
                 return;
-
-            new UpdateReadings().execute();
-
-            ParameterList.setParameters(mService.subscribedParameterList);
             setupRecyclerView((RecyclerView) recyclerView);
+        }
+    };
+
+    private BroadcastReceiver onNewMeasurementResult = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(mService.subscribedParameterList == null)
+                return;
+            recyclerViewAdapter.notifyDataSetChanged();
+            ParameterDetailFragment fragment = (ParameterDetailFragment)getSupportFragmentManager().findFragmentById(R.id.parameter_detail_container);
+            if (fragment != null) {
+                fragment.UpdateFragment();
+            }
         }
     };
 
@@ -149,25 +156,12 @@ public class ParameterListActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         bindService();
-        timer = new Timer();
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(new Runnable() {
-                    public void run() {
-                        new UpdateReadings().execute();
-                    }
-                });
-            }
-        };
-        timer.schedule(task, 0, 1000*20); //Every 20 seconds
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         unbindService();
-        timer.cancel();
     }
 
     @Override
@@ -183,37 +177,6 @@ public class ParameterListActivity extends AppCompatActivity {
         }
     }
     //endregion
-
-    private class UpdateReadings extends AsyncTask<Object, Object, List<Measurement>> {
-        @Override
-        protected List<Measurement> doInBackground(Object[] params) {
-            if (mService != null && mService.subscribedParameterList != null)
-                return webAPIHelper.getParameterMeasurements();
-            else
-                return null;
-        }
-
-        @Override
-        protected void onPostExecute(List<Measurement> result) {
-            super.onPostExecute(result);
-
-            if (result != null && mService != null && mService.subscribedParameterList != null) {
-                List<Parameter> parameterList = mService.subscribedParameterList;
-                for (Parameter parameter : parameterList) {
-                    for (Measurement m : result) {
-                        if (parameter.id == m.id) {
-                            parameter.reading = m.value;
-                            parameter.isValid = m.isValid;
-                        }
-                    }
-                }
-                ParameterList.setParameters(parameterList);
-                recyclerViewAdapter.notifyDataSetChanged();
-            } else {
-                // Error handling
-            }
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -1,11 +1,23 @@
 package com.smap16e.group02.isamonitor;
 
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
+
+import com.smap16e.group02.isamonitor.model.ParameterList;
+
+import static android.R.attr.filter;
 
 /**
  * An activity representing a single Parameter detail screen. This
@@ -14,6 +26,56 @@ import android.view.MenuItem;
  * in a {@link ParameterListActivity}.
  */
 public class ParameterDetailActivity extends AppCompatActivity {
+
+
+    private ParameterDetailFragment fragment;
+    //region Service binding
+    private static final String TAG = "ParameterDetailFragment";
+    BackgroundService mService;
+    private boolean mBound = false;
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            Log.e(TAG, "onServiceConnected called...");
+
+            mService = ((BackgroundService.LocalBinder) service).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
+
+    void bindService() {
+        Log.e(TAG, "bindService called...");
+        bindService(new Intent(ParameterDetailActivity.this,
+                BackgroundService.class), mConnection, Context.BIND_AUTO_CREATE);
+        mBound = true;
+    }
+
+    void unbindService() {
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+    //endregion
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bindService();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unbindService();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +90,10 @@ public class ParameterDetailActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BackgroundService.BROADCAST_NEW_MEASUREMENT);
+        LocalBroadcastManager.getInstance(this).registerReceiver(onNewMeasurementResult, filter);
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
@@ -44,13 +110,32 @@ public class ParameterDetailActivity extends AppCompatActivity {
             Bundle arguments = new Bundle();
             arguments.putString(ParameterDetailFragment.ARG_ITEM_ID,
                     getIntent().getStringExtra(ParameterDetailFragment.ARG_ITEM_ID));
-            ParameterDetailFragment fragment = new ParameterDetailFragment();
+            fragment = new ParameterDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.parameter_detail_container, fragment)
                     .commit();
+            fragment.setRetainInstance(true);
         }
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+    }
+
+    private BroadcastReceiver onNewMeasurementResult = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(mService.subscribedParameterList == null)
+                return;
+
+            if (fragment != null) {
+                fragment.UpdateFragment();
+            }
+        }
+    };
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

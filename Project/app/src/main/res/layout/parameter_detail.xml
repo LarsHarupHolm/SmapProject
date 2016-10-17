@@ -1,7 +1,7 @@
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:fillViewport="true"
     android:orientation="vertical">
 
@@ -25,9 +25,10 @@
         android:tint="@color/greenA700"
         android:contentDescription="@string/data_is_valid"
         android:layout_marginEnd="@dimen/text_margin"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="22dp"
         android:layout_marginStart="@dimen/text_margin"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        tools:context="com.smap16e.group02.isamonitor.ParameterDetailFragment" />
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chart"

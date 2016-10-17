@@ -22,7 +22,7 @@
         android:id="@+id/parameter_list"
         android:name="com.smap16e.group02.isamonitor.ParameterListFragment"
         android:layout_width="0dp"
-        android:layout_weight="5"
+        android:layout_weight="5.5"
         android:layout_height="match_parent"
         android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"

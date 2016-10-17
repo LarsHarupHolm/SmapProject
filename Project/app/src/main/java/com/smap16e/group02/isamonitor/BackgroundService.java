@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
@@ -16,11 +17,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.smap16e.group02.isamonitor.model.Measurement;
 import com.smap16e.group02.isamonitor.model.Parameter;
+import com.smap16e.group02.isamonitor.model.ParameterList;
 import com.smap16e.group02.isamonitor.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by KSJensen on 30/09/2016.
@@ -33,14 +38,14 @@ public class BackgroundService extends Service {
     //region Properties
     private static final String TAG = "BackgroundService";
     public static final String BROADCAST_NEW_PARAMETERINFO = "userParameterList";
-    public static String APIurl = "http://139.59.152.53/api/measurement/";
+    public static final String BROADCAST_NEW_MEASUREMENT = "newMeasurement";
+    public static String APIurl = "";
 
     public List<Parameter> generalParameterList;
     public List<Parameter> subscribedParameterList;
-    public List<Parameter> notSubscribedParameterList;
     private List<Integer> userParameterIDList;
 
-    private String userID = "userIDSAMPLE";
+    private String userID = "";
     private DatabaseReference mDatabase;
     private DatabaseReference mGeneralParametersReference;
     private DatabaseReference mUserParametersReference;
@@ -51,6 +56,10 @@ public class BackgroundService extends Service {
     public boolean hasGeneralParameterList = false;
     private boolean hasUserParameterList = false;
     private final IBinder mBinder = new LocalBinder();
+    private WebAPIHelper webAPIHelper = new WebAPIHelper();
+    private Timer timer;
+    private Handler handler = new Handler();
+
     //endregion
 
     //region Constructor and overrides
@@ -66,6 +75,8 @@ public class BackgroundService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "SERVICE CREATED");
+
+        subscribedParameterList = new ArrayList<>();
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -84,11 +95,57 @@ public class BackgroundService extends Service {
         subscribeToSettings();
         subscribeToGeneralParameterList();
         subscribeToUserParameterList();
+
+        timer = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        new UpdateReadings().execute();
+                    }
+                });
+            }
+        };
+        timer.schedule(task, 0, 1000*5); //Every 5 seconds
+    }
+
+    private class UpdateReadings extends AsyncTask<Object, Object, List<Measurement>> {
+        @Override
+        protected List<Measurement> doInBackground(Object[] params) {
+            if (subscribedParameterList != null)
+                return webAPIHelper.getParameterMeasurements();
+            else
+                return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<Measurement> result) {
+            super.onPostExecute(result);
+
+            if (result != null) {
+                //Matching measurements to their parameters
+                for (Parameter parameter : subscribedParameterList) {
+                    for (Measurement m : result) {
+                        if (parameter.id == m.id) {
+                            parameter.measurements.add(m);
+                            parameter.isValid = m.isValid;
+                        }
+                    }
+                }
+                ParameterList.setParameters(subscribedParameterList);
+                broadCastNewInformation(BROADCAST_NEW_MEASUREMENT);
+            } else {
+                // Error handling
+            }
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        timer.cancel(); //Cancelling the routine that fetches new data from the WebAPI
 
         if (mGeneralParametersListener != null) {
             mGeneralParametersReference.removeEventListener(mGeneralParametersListener);
@@ -150,8 +207,6 @@ public class BackgroundService extends Service {
 
                 User user = dataSnapshot.getValue(User.class);
                 userParameterIDList = new ArrayList<>();
-                subscribedParameterList = new ArrayList<>();
-                notSubscribedParameterList = new ArrayList<>();
 
                 if(user.subscribedParameters != null){
                     userParameterIDList = user.subscribedParameters;
@@ -178,15 +233,10 @@ public class BackgroundService extends Service {
         @Override
         protected Void doInBackground(Void... params) {
             for(Parameter parameter : generalParameterList){
-                boolean addedToSubscribedList = false;
                 for(int parameterID : userParameterIDList){
                     if(parameter.id == parameterID){
                         subscribedParameterList.add(parameter);
-                        addedToSubscribedList = true;
                     }
-                }
-                if(!addedToSubscribedList){
-                    notSubscribedParameterList.add(parameter);
                 }
             }
 
@@ -194,7 +244,9 @@ public class BackgroundService extends Service {
         }
 
         protected void onPostExecute(Void result) {
+            ParameterList.setParameters(subscribedParameterList);
             broadCastNewInformation(BROADCAST_NEW_PARAMETERINFO);
+            new UpdateReadings().execute();
         }
     }
 

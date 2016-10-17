@@ -1,8 +1,12 @@
 package com.smap16e.group02.isamonitor.model;
 
+import android.icu.util.Measure;
+
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by KSJensen on 30/09/2016.
@@ -14,9 +18,18 @@ public class Parameter {
     public String name;
     public String surname;
     public String unit;
-    public Double reading;
     public String format;
     public Boolean isValid;
+    public List<Measurement> measurements;
+
+    public Parameter() {
+        measurements = new ArrayList<>();
+    }
+
+    public Measurement getLatestMeasurement() {
+        if (measurements == null || measurements.size() == 0) return null;
+        return measurements.get(measurements.size()-1);
+    }
 
     @Override
     public String toString() {
@@ -24,7 +37,9 @@ public class Parameter {
     }
 
     public String readingToString() {
-        if (reading == null || format == null) return "";
+        if (measurements == null || measurements.size() == 0) return "";
+        Double reading = measurements.get(measurements.size()-1).value;
+        if (format == null) return "";
         switch (format) {
             case "in/out":
                 return (reading.intValue() == 1 ? "In" : "Out");
