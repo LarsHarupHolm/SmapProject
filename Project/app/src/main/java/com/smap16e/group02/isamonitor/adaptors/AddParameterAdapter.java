@@ -25,16 +25,16 @@ import java.util.List;
 public class AddParameterAdapter extends ArrayAdapter <AddParameterModel> {
 
     private LayoutInflater mInflater;
-    public ArrayList<AddParameterModel> ParameterModels;
+    public ArrayList<AddParameterModel> parameterModels;
 
     public AddParameterAdapter(Context context, int resource, List<AddParameterModel> objects) {
         super(context, resource, objects);
-        ParameterModels = (ArrayList<AddParameterModel>) objects;
+        parameterModels = (ArrayList<AddParameterModel>) objects;
         mInflater = LayoutInflater.from(context);
     }
 
     public ArrayList<AddParameterModel> getParameterModels(){
-        return ParameterModels;
+        return parameterModels;
     }
 
     @NonNull
@@ -47,15 +47,15 @@ public class AddParameterAdapter extends ArrayAdapter <AddParameterModel> {
         TextView textViewSurname = (TextView)convertView.findViewById(R.id.row_parameter_surname);
         CheckBox checkBoxIsChecked = (CheckBox)convertView.findViewById(R.id.row_checkbox);
 
-        textViewname.setText(ParameterModels.get(position).name);
-        textViewSurname.setText(ParameterModels.get(position).surname);
-        checkBoxIsChecked.setChecked(ParameterModels.get(position).isChecked);
+        textViewname.setText(parameterModels.get(position).name);
+        textViewSurname.setText(parameterModels.get(position).surname);
+        checkBoxIsChecked.setChecked(parameterModels.get(position).isChecked);
 
         checkBoxIsChecked.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 //Set models[postition].isChecked accordingly
-                ParameterModels.get(position).isChecked = isChecked;
+                parameterModels.get(position).isChecked = isChecked;
             }
         });
         return convertView;

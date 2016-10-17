@@ -129,7 +129,7 @@ public class ParameterListActivity extends AppCompatActivity {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(ParameterListActivity.this, AddParameter.class);
+                Intent i = new Intent(ParameterListActivity.this, AddParameterActivity.class);
                 startActivityForResult(i, ADD_PARAMETER);
             }
         });
@@ -152,7 +152,7 @@ public class ParameterListActivity extends AppCompatActivity {
             recyclerViewAdapter.notifyDataSetChanged();
             ParameterDetailFragment fragment = (ParameterDetailFragment)getSupportFragmentManager().findFragmentById(R.id.parameter_detail_container);
             if (fragment != null) {
-                fragment.UpdateFragment();
+                fragment.updateFragment();
             }
         }
     };

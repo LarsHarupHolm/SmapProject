@@ -132,7 +132,7 @@ public class ParameterDetailActivity extends AppCompatActivity {
                 return;
 
             if (fragment != null) {
-                fragment.UpdateFragment();
+                fragment.updateFragment();
             }
         }
     };

@@ -82,12 +82,12 @@ public class ParameterDetailFragment extends Fragment {
         LineData lineData = new LineData(chartDataSet);
         chart.setData(lineData);
 
-        InitializeFragment();
+        initializeFragment();
         onCreateViewCalled = true;
         return rootView;
     }
 
-    public void UpdateFragment() {
+    public void updateFragment() {
         if (onCreateViewCalled && isAdded()) {
             updateParameterItem();
             if (parameterItem != null) {
@@ -98,7 +98,7 @@ public class ParameterDetailFragment extends Fragment {
         }
     }
 
-    public void InitializeFragment() {
+    public void initializeFragment() {
         updateParameterItem();
         detailTextView.setText(String.format("%s %s", getResources().getString(R.string.current_value), parameterItem.readingToString()));
         isValidIndicator.setColorFilter(ContextCompat.getColor(getContext(), parameterItem.isValid ? R.color.greenA700 : R.color.redA700));

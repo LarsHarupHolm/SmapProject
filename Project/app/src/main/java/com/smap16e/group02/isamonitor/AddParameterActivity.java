@@ -20,7 +20,7 @@ import com.smap16e.group02.isamonitor.model.Parameter;
 
 import java.util.ArrayList;
 
-public class AddParameter extends AppCompatActivity {
+public class AddParameterActivity extends AppCompatActivity {
     private String TAG = "AddParameterActivity";
     private final String bundle_ObjectArray = "add parametermodel array";
     private long selectedParameter = -1;
@@ -103,7 +103,7 @@ public class AddParameter extends AppCompatActivity {
             if(mListView != null) {
                 isLoadedFromSavedInstance = true;
                 ArrayList<AddParameterModel> parameterModelArrayList = savedInstanceState.getParcelableArrayList(bundle_ObjectArray);
-                mAdapter = new AddParameterAdapter(AddParameter.this, android.R.layout.list_content, parameterModelArrayList);
+                mAdapter = new AddParameterAdapter(AddParameterActivity.this, android.R.layout.list_content, parameterModelArrayList);
                 mListView.setAdapter(mAdapter);
                 return;
             }
@@ -155,15 +155,15 @@ public class AddParameter extends AppCompatActivity {
                     isSubscribed));
         }
         if(mListView != null) {
-            mAdapter = new AddParameterAdapter(AddParameter.this, android.R.layout.list_content, addParameterModelArrayList);
+            mAdapter = new AddParameterAdapter(AddParameterActivity.this, android.R.layout.list_content, addParameterModelArrayList);
             mListView.setAdapter(mAdapter);
         }
     }
 
     private void addParameterToUserSubscription(){
-        if(mAdapter.ParameterModels == null) return;
+        if(mAdapter.parameterModels == null) return;
         ArrayList<Integer> parameterIds = new ArrayList<>();
-        for(AddParameterModel model : mAdapter.ParameterModels) {
+        for(AddParameterModel model : mAdapter.parameterModels) {
             if(model.isChecked) {
                 parameterIds.add(model.id);
             }

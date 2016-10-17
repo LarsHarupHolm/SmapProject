@@ -72,22 +72,7 @@ public class WebAPIHelper {
         return result.toString();
     }
 
-    public Measurement buildMeasurement(String jsonString, int parameterID){
-        Measurement result = new Measurement();
-        try {
-            JSONObject jsonObject = new JSONObject(jsonString);
-            result.id = parameterID;
-            result.value = jsonObject.getDouble("value");
-            result.measureTime =  jsonObject.getLong("timestamp");
-            result.isValid = jsonObject.getBoolean("isValid");
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
-        }
-        return result;
-    }
-
-    public List<Measurement> buildMeasurements(String jsonString){
+    private List<Measurement> buildMeasurements(String jsonString){
         List<Measurement> result = new ArrayList<>();
         try {
             JSONArray jsonArray = new JSONArray(jsonString);

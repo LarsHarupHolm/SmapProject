@@ -24,7 +24,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.smap16e.group02.isamonitor.ParameterListActivity" />
         </activity>
-        <activity android:name=".AddParameter" />
+        <activity android:name=".AddParameterActivity" />
         <activity android:name=".login.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
