@@ -1,23 +1,14 @@
 package com.smap16e.group02.isamonitor;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -30,8 +21,6 @@ import com.smap16e.group02.isamonitor.model.Parameter;
 import com.smap16e.group02.isamonitor.model.ParameterList;
 
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * A fragment representing a single Parameter detail screen.
@@ -131,7 +120,7 @@ public class ParameterDetailFragment extends Fragment {
             data.addEntry(new Entry(chartDataSet.getEntryCount(), (float)measurement.value,0),0);
             data.notifyDataChanged();
             chart.notifyDataSetChanged();
-            chart.setVisibleXRangeMaximum(120);
+            chart.setVisibleXRangeMaximum(getContext().getResources().getInteger(R.integer.maximumMeasurementsForParameter));
             chart.moveViewToX(data.getEntryCount());
         }
     }

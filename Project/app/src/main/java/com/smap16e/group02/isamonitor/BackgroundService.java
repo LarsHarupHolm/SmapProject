@@ -136,6 +136,9 @@ public class BackgroundService extends Service {
                     for (Measurement m : result) {
                         if (parameter.id == m.id) {
                             parameter.measurements.add(m);
+                            while (parameter.measurements.size() > getBaseContext().getResources().getInteger(R.integer.maximumMeasurementsForParameter)) {
+                                parameter.measurements.remove(0);
+                            }
                             parameter.isValid = m.isValid;
                         }
                     }
