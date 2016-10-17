@@ -22,6 +22,8 @@ import com.smap16e.group02.isamonitor.model.Parameter;
 import com.smap16e.group02.isamonitor.model.ParameterList;
 import com.smap16e.group02.isamonitor.model.User;
 
+import java.io.IOException;
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -39,6 +41,7 @@ public class BackgroundService extends Service {
     private static final String TAG = "BackgroundService";
     public static final String BROADCAST_NEW_PARAMETERINFO = "userParameterList";
     public static final String BROADCAST_NEW_MEASUREMENT = "newMeasurement";
+    public static final String BROADCAST_CONNECTION_ERROR = "connectionError";
     public static String APIurl = "";
 
     public List<Parameter> generalParameterList;
@@ -114,9 +117,13 @@ public class BackgroundService extends Service {
         @Override
         protected List<Measurement> doInBackground(Object[] params) {
             if (subscribedParameterList != null)
-                return webAPIHelper.getParameterMeasurements();
-            else
-                return null;
+                try {
+                    return webAPIHelper.getParameterMeasurements();
+                } catch (IOException e) {
+                    broadCastNewInformation(BROADCAST_CONNECTION_ERROR);
+                    e.printStackTrace();
+                }
+            return null;
         }
 
         @Override
@@ -135,8 +142,6 @@ public class BackgroundService extends Service {
                 }
                 ParameterList.setParameters(subscribedParameterList);
                 broadCastNewInformation(BROADCAST_NEW_MEASUREMENT);
-            } else {
-                // Error handling
             }
         }
     }

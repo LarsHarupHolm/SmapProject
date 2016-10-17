@@ -27,11 +27,7 @@ import static android.content.ContentValues.TAG;
 
 public class WebAPIHelper {
 
-    public String getParameterMeasurement(int parameterID){
-        return makeHTTPRequest(BackgroundService.APIurl+parameterID);
-    }
-
-    public List<Measurement> getParameterMeasurements(){
+    public List<Measurement> getParameterMeasurements() throws IOException {
         String requestResult = makeHTTPRequest(BackgroundService.APIurl);
         if(requestResult != null)
             return buildMeasurements(requestResult);
@@ -40,15 +36,15 @@ public class WebAPIHelper {
     }
 
     //Inspiration from http://stackoverflow.com/questions/21170893/httpurlconnection-cutting-inputstream-returned
-    private String makeHTTPRequest(String urlString){
+    private String makeHTTPRequest(String urlString) throws IOException {
         StringBuilder result = new StringBuilder();
         InputStream inputStream;
 
         try {
             URL url = new URL(urlString);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setReadTimeout(10000 /* milliseconds */);
-            urlConnection.setConnectTimeout(15000 /* milliseconds */);
+            urlConnection.setReadTimeout(5000 /* milliseconds */);
+            urlConnection.setConnectTimeout(5000 /* milliseconds */);
             urlConnection.setRequestMethod("GET");
             urlConnection.setDoInput(true);
             urlConnection.connect();
@@ -69,13 +65,9 @@ public class WebAPIHelper {
                 case 502:
                     Log.e(TAG, "No connection to server");
             }
-        } catch (ConnectException e){
-            //java.net.ConnectException == Not connected to VPN
-            e.printStackTrace();
-            return null;
         } catch (IOException e) {
             e.printStackTrace();
-            return null;
+            throw e;
         }
 
         return result.toString();

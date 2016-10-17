@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.smap16e.group02.isamonitor.model.ParameterList;
 
@@ -95,6 +96,9 @@ public class ParameterDetailActivity extends AppCompatActivity {
         filter.addAction(BackgroundService.BROADCAST_NEW_MEASUREMENT);
         LocalBroadcastManager.getInstance(this).registerReceiver(onNewMeasurementResult, filter);
 
+        filter = new IntentFilter();
+        filter.addAction(BackgroundService.BROADCAST_CONNECTION_ERROR);
+        LocalBroadcastManager.getInstance(this).registerReceiver(onErrorConnection, filter);
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
         // (e.g. when rotating the screen from portrait to landscape).
@@ -134,6 +138,13 @@ public class ParameterDetailActivity extends AppCompatActivity {
             if (fragment != null) {
                 fragment.UpdateFragment();
             }
+        }
+    };
+
+    private BroadcastReceiver onErrorConnection = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(ParameterDetailActivity.this, getResources().getText(R.string.ErrorMessageNotConnected), Toast.LENGTH_LONG).show();
         }
     };
 

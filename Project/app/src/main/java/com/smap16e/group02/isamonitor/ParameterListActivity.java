@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.smap16e.group02.isamonitor.adaptors.RecyclerViewAdapter;
@@ -105,6 +106,10 @@ public class ParameterListActivity extends AppCompatActivity {
         filter.addAction(BackgroundService.BROADCAST_NEW_MEASUREMENT);
         LocalBroadcastManager.getInstance(this).registerReceiver(onNewMeasurementResult, filter);
 
+        filter = new IntentFilter();
+        filter.addAction(BackgroundService.BROADCAST_CONNECTION_ERROR);
+        LocalBroadcastManager.getInstance(this).registerReceiver(onErrorConnection, filter);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
 
@@ -149,6 +154,13 @@ public class ParameterListActivity extends AppCompatActivity {
             if (fragment != null) {
                 fragment.UpdateFragment();
             }
+        }
+    };
+
+    private BroadcastReceiver onErrorConnection = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(ParameterListActivity.this, getResources().getText(R.string.ErrorMessageNotConnected), Toast.LENGTH_LONG).show();
         }
     };
 
