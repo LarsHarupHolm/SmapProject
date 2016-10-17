@@ -23,7 +23,6 @@ import com.smap16e.group02.isamonitor.model.ParameterList;
 import com.smap16e.group02.isamonitor.model.User;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;

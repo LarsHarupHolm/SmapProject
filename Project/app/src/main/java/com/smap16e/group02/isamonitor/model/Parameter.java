@@ -1,7 +1,5 @@
 package com.smap16e.group02.isamonitor.model;
 
-import android.icu.util.Measure;
-
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.text.DecimalFormat;
