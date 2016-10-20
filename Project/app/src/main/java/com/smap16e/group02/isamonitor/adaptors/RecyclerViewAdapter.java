@@ -49,7 +49,9 @@ public class RecyclerViewAdapter
         holder.mItem = mValues.get(position);
         holder.mIdView.setText(mValues.get(position).name);
         holder.mContentView.setText(mValues.get(position).readingToString());
-        holder.mIsValidView.setColorFilter(ContextCompat.getColor(context, holder.mItem.isValid ? R.color.greenA700 : R.color.redA700));
+        if (holder.mItem != null && holder.mItem.isValid != null) {
+            holder.mIsValidView.setColorFilter(ContextCompat.getColor(context, holder.mItem.isValid ? R.color.greenA700 : R.color.redA700));
+        }
         // When user clicks on item in list
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override

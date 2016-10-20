@@ -168,6 +168,7 @@ public class AddParameterActivity extends AppCompatActivity {
                 parameterIds.add(model.id);
             }
         }
+        mService.subscribedParameterList = new ArrayList<>();
         mService.addParameterListSubscription(parameterIds);
     }
 }
