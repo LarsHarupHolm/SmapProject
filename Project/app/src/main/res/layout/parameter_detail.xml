@@ -26,7 +26,6 @@
         android:contentDescription="@string/data_is_valid"
         android:layout_marginEnd="@dimen/text_margin"
         android:layout_marginTop="22dp"
-        android:layout_marginStart="@dimen/text_margin"
         android:layout_alignParentEnd="true"
         tools:context="com.smap16e.group02.isamonitor.ParameterDetailFragment" />
 
