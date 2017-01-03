@@ -35,4 +35,5 @@
     <string name="characters_long">" characters long!"</string>
     <string name="no_users_exist">No user exists with that email</string>
     <string name="email_has_been_sent">Email has been sent.</string>
+    <string name="not_logged_in">Not logged in, try again</string>
 </resources>

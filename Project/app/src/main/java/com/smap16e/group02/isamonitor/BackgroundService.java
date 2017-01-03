@@ -24,7 +24,9 @@ import com.smap16e.group02.isamonitor.model.User;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -48,6 +50,7 @@ public class BackgroundService extends Service {
     private List<Integer> userParameterIDList;
 
     private String userID = "";
+    private FirebaseUser mUser;
     private DatabaseReference mDatabase;
     private DatabaseReference mGeneralParametersReference;
     private DatabaseReference mUserParametersReference;
@@ -82,9 +85,9 @@ public class BackgroundService extends Service {
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            userID = user.getUid();
+        mUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (mUser != null) {
+            userID = mUser.getUid();
         } else {
             Log.e(TAG, "INVALID USER!");
             return;
@@ -215,7 +218,15 @@ public class BackgroundService extends Service {
                 User user = dataSnapshot.getValue(User.class);
                 userParameterIDList = new ArrayList<>();
 
-                if(user.subscribedParameters != null){
+                if (user == null)
+                {
+                    // Add user to database
+                    Map<String, String> map = new HashMap<>();
+                    map.put("email", mUser.getEmail());
+                    mDatabase.child("users").child(mUser.getUid()).setValue(map);
+                }
+
+                if(user != null && user.subscribedParameters != null){
                     userParameterIDList = user.subscribedParameters;
                     hasUserParameterList = true;
                 }

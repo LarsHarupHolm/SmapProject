@@ -32,7 +32,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".login.SignupActivity" />
         <activity android:name=".login.ResetPasswordActivity"></activity>
         <service
             android:name=".BackgroundService"

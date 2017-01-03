@@ -14,9 +14,20 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.smap16e.group02.isamonitor.ParameterListActivity;
 import com.smap16e.group02.isamonitor.R;
+import com.smap16e.group02.isamonitor.model.User;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+
+import static com.google.android.gms.tasks.Tasks.await;
 
 //Sources for authentication:
 //https://firebase.google.com/docs/auth/android/password-auth
@@ -34,6 +45,7 @@ public class LoginActivity extends AppCompatActivity {
     private String mEmail;
 
     private FirebaseAuth mAuth;
+    private DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +60,7 @@ public class LoginActivity extends AppCompatActivity {
 
         //Firebase
         mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         //Check if returning by log out
         Bundle bundle = getIntent().getExtras();
@@ -66,19 +79,27 @@ public class LoginActivity extends AppCompatActivity {
         super.onStart();
         //Skip login if user is already logged in.
         skipIfLoggedIn();
+
     }
 
     private void skipIfLoggedIn() {
-        FirebaseUser user = mAuth.getCurrentUser();
-        //Only if user is verified
-        if(user != null) {
-            if(user.isEmailVerified()) {
-                //Redirect to list
-                Log.d(TAG, "LogIn: User already logged in, redirecting past login");
-                Intent loginFinishedIntent = new Intent(LoginActivity.this, ParameterListActivity.class);
-                startActivity(loginFinishedIntent);
-                finish(); //finish so User cannot re-enter login screen
-            }
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if(currentUser != null) {
+            currentUser.getToken(false).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                @Override
+                public void onComplete(@NonNull Task<GetTokenResult> task) {
+                    if (task.isSuccessful()) {
+                        String authToken = task.getResult().getToken();
+                        Log.d(TAG, "LogIn: User already logged in, redirecting past login");
+                        Intent loginFinishedIntent = new Intent(LoginActivity.this, ParameterListActivity.class);
+                        startActivity(loginFinishedIntent);
+                        finish(); //finish so User cannot re-enter login screen
+                    } else {
+                        Toast.makeText(LoginActivity.this, R.string.not_logged_in, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
         }
     }
 
@@ -104,33 +125,20 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d(TAG, "LogIn: " + task.isSuccessful());
                         if(task.isSuccessful())
                         {
-                            //Check if user is verified
+                            //Check if user is logged in
                             FirebaseUser user = mAuth.getCurrentUser();
-                            if(user.isEmailVerified()) {
+                            if(user != null) {
                                 Intent loginFinishedIntent = new Intent(LoginActivity.this, ParameterListActivity.class);
                                 startActivity(loginFinishedIntent);
                                 finish(); //finish so User cannot re-enter login screen
                             } else {
-                                Toast.makeText(LoginActivity.this, R.string.verify_account, Toast.LENGTH_LONG).show();
+                                Toast.makeText(LoginActivity.this, R.string.not_logged_in, Toast.LENGTH_LONG).show();
                             }
                         } else {
                             Toast.makeText(LoginActivity.this, R.string.username_pw_incorrect, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
-            }
-        });
-
-        btnSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            //Take the input from mail and send it to new window
-                String email = ((EditText)findViewById(R.id.login_email)).getText().toString();
-                Intent signUpIntent = new Intent(LoginActivity.this, SignupActivity.class);
-                if(!email.isEmpty() && email.contains("@")) {
-                    signUpIntent.putExtra(EXTRA_EMAIL, email);
-                }
-                startActivityForResult(signUpIntent, REQ_REGISTERED_EMAIL);
             }
         });
 
