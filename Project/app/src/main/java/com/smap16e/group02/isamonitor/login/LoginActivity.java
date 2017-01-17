@@ -39,7 +39,6 @@ public class LoginActivity extends AppCompatActivity {
     public static final int REQ_REGISTERED_EMAIL = 1;
 
     private Button btnLogIn;
-    private Button btnSignUp;
     private Button btnLostPassword;
 
     private String mEmail;
@@ -54,7 +53,6 @@ public class LoginActivity extends AppCompatActivity {
 
         //Get UI elements
         btnLogIn = (Button)findViewById(R.id.btn_logIn);
-        btnSignUp = (Button)findViewById(R.id.btn_logIn_signUp);
         btnLostPassword = (Button)findViewById(R.id.btn_lostPassword);
         createOnClickListeners();
 

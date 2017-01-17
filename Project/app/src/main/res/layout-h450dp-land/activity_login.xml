@@ -48,21 +48,9 @@
         android:layout_marginTop="10dp"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_centerHorizontal="true"
-        android:layout_above="@id/btn_logIn_signUp"
-
-        />
-
-    <Button
-        android:id="@+id/btn_logIn_signUp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/register_description"
-        android:layout_centerHorizontal="true"
-        android:background="@null"
-        android:textAllCaps="false"
-        android:textColor="@color/colorAccentDark"
         android:layout_above="@id/btn_lostPassword"
         />
+
     <Button
         android:id="@+id/btn_lostPassword"
         android:layout_width="wrap_content"
